@@ -45,6 +45,32 @@
     <!-- Profile für Code-Qualitätschecks -->
     <profiles>
         <profile>
+            <id>test-code</id>
+            <build>
+                <plugins>
+                    <!-- RUN Code -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>run-main</id>
+                                <phase>package</phase> <!-- Bind to a lifecycle phase -->
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>de.fh.albsig.Main</mainClass>
+                                    <cleanupDaemonThreads>true</cleanupDaemonThreads>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>code-quality</id>
             <build>
                 <plugins>
