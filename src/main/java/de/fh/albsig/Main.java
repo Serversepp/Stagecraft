@@ -17,7 +17,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        private static final Logger logger = LogManager.getLogger(UiHelper.class);
+        final Logger logger = LogManager.getLogger(UiHelper.class);
         // Create and show the UI
         Ui ui = new Ui();
         ui.show();
