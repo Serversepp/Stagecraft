@@ -1,10 +1,18 @@
 package de.fh.albsig;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 
+import java.awt.event.ActionEvent;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+/**
+ * Represents the main UI class for the application.
+ */
 public class Ui {
     private UiHelper uiHelper;
 
+    /**
+     * Constructs the UI and sets up its components.
+     */
     public Ui() {
         // Create UI using the helper
         uiHelper = new UiHelper("Basic UI App", 400, 300);
@@ -22,6 +30,9 @@ public class Ui {
         });
     }
 
+    /**
+     * Displays the UI by delegating to the UiHelper.
+     */
     public void show() {
         uiHelper.show();
     }
