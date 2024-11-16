@@ -54,7 +54,7 @@
                         <artifactId>maven-checkstyle-plugin</artifactId>
                         <version>3.5.0</version>
                         <configuration>
-                            <configLocation>src/main/res/google_checks.xml</configLocation>
+                            <configLocation>src/main/resources/google_checks.xml</configLocation>
                             <failOnViolation>true</failOnViolation>
                         </configuration>
                         <executions>
