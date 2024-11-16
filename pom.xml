@@ -56,6 +56,7 @@
                         <configuration>
                             <configLocation>src/main/resources/google_checks.xml</configLocation>
                             <failOnViolation>true</failOnViolation>
+                            <consoleOutput>true</consoleOutput>
                         </configuration>
                         <executions>
                             <execution>
@@ -83,6 +84,8 @@
                             <rulesets>
                                 <ruleset>src/main/resources/pmd-custom-ruleset.xml</ruleset>
                             </rulesets>
+                            <printFailingErrors>true</printFailingErrors>
+                            <verbose>true</verbose>
                         </configuration>
                         <executions>
                             <execution>
@@ -102,6 +105,7 @@
                         <configuration>
                             <effort>Max</effort>
                             <threshold>Low</threshold>
+                            <failOnError>true</failOnError>
                         </configuration>
                         <executions>
                             <execution>
