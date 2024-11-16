@@ -1,25 +1,23 @@
 package de.fh.albsig;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-/**
- * The Main class serves as the entry point for the application.
- * It creates and displays the user interface (UI).
- *
- */
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Main {
-    /**
-     * The main method is the entry point of the application.
-     * It initializes the application by creating and displaying the user interface (UI).
-     *
-     * @param args command-line arguments passed to the program (not used in this application)
-     */
-    public static void main(String[] args) {
+public class Main extends Application {
 
-        final Logger logger = LogManager.getLogger(UiHelper.class);
-        // Create and show the UI
-        Ui ui = new Ui();
+    @Override
+    public void start(Stage primaryStage) {
+        // Erstelle ein UiFx-Objekt
+        UiFx ui = new UiFx(primaryStage);
+
+        // Richte die Benutzeroberfläche ein
+        ui.setupUI();
+
+        // Zeige die Benutzeroberfläche an
         ui.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
