@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,6 +74,21 @@ public class UiHelper {
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.addActionListener(actionListener);
         panel.add(button);
+    }
+
+    /**
+     * Adds a dropdown menu (combo box) to the UI with the specified options and action listener.
+     *
+     * @param options        an array of string options to be displayed in the dropdown menu
+     * @param actionListener the action listener triggered when an item is selected
+     * @return the created JComboBox object
+     */
+    public JComboBox<String> addDropdownMenu(String[] options, ActionListener actionListener) {
+        JComboBox<String> dropdown = new JComboBox<>(options);
+        dropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, dropdown.getPreferredSize().height));
+        dropdown.addActionListener(actionListener);
+        panel.add(dropdown);
+        return dropdown;
     }
 
     /**
