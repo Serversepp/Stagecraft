@@ -1,6 +1,8 @@
 package de.fh.albsig;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -27,6 +29,13 @@ public class Ui {
         uiHelper.addButton("Click Me", (ActionEvent e) -> {
             String name = textField.getText();
             JOptionPane.showMessageDialog(null, "Hello, " + name + "!");
+        });
+        // Define dropdown options
+        String[] options = {"Option 1", "Option 2", "Option 3"};
+        // add dropdown
+        uiHelper.addDropdownMenu(options, selectedOption -> {
+            System.out.println("Selected: " + selectedOption);
+            // Additional logic for handling the selected option can go here
         });
     }
 

@@ -77,20 +77,45 @@ public class UiHelper {
     }
 
     /**
-     * Adds a dropdown menu (combo box) to the UI with the specified options and action listener.
+     * Adds a dropdown menu (combo box) to the UI with the specified options and a callback for selection changes.
      *
-     * @param options        an array of string options to be displayed in the dropdown menu
-     * @param actionListener the action listener triggered when an item is selected
+     * <p>
+     * Example usage:
+     * </p>
+     * <pre>{@code
+     * // Create an instance of UiHelper
+     * UiHelper uiHelper = new UiHelper("Dropdown Example", 400, 300);
+     *
+     * // Define dropdown options
+     * String[] options = {"Option 1", "Option 2", "Option 3"};
+     *
+     * // Add a dropdown menu and define the callback for selection changes
+     * uiHelper.addDropdownMenu(options, selectedOption -> {
+     *     System.out.println("User selected: " + selectedOption);
+     *     // Additional logic for the selected option
+     * });
+     *
+     * // Display the UI
+     * uiHelper.show();
+     * }</pre>
+     *
+     * @param options          an array of string options to be displayed in the dropdown menu
+     * @param onSelectionChange a callback function that accepts the selected option as a parameter
      * @return the created JComboBox object
      */
-    public JComboBox<String> addDropdownMenu(String[] options, ActionListener actionListener) {
+    public JComboBox<String> addDropdownMenu(String[] options, java.util.function.Consumer<String> onSelectionChange) {
         JComboBox<String> dropdown = new JComboBox<>(options);
         dropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, dropdown.getPreferredSize().height));
-        dropdown.addActionListener(actionListener);
+
+        // Add a listener to handle selection changes internally
+        dropdown.addActionListener(e -> {
+            String selectedOption = (String) dropdown.getSelectedItem();
+            onSelectionChange.accept(selectedOption); // Notify the callback with the selected option
+        });
+
         panel.add(dropdown);
         return dropdown;
     }
-
     /**
      * Displays the UI by making the frame visible.
      */
