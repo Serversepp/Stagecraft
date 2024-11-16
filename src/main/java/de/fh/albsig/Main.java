@@ -1,5 +1,7 @@
 package de.fh.albsig;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
  * The Main class serves as the entry point for the application.
  * It creates and displays the user interface (UI).
@@ -15,6 +17,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
+        private static final Logger logger = LogManager.getLogger(UiHelper.class);
         // Create and show the UI
         Ui ui = new Ui();
         ui.show();
