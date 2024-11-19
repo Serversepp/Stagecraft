@@ -1,5 +1,6 @@
 package de.fh.albsig;
 
+import java.util.function.Consumer;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -8,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.function.Consumer;
+
 
 /**
  * A JavaFX UI class for setting up and displaying a simple user interface.
@@ -35,7 +36,7 @@ public class UiFx {
     /**
      * Sets up the UI components.
      */
-    public void setupUI() {
+    public void setupUi() {
         addLabel("Welcome to JavaFX!");
 
         TextField nameField = addTextField("Enter your name");

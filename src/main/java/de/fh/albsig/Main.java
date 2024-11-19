@@ -20,7 +20,7 @@ public class Main extends Application {
         UiFx ui = new UiFx(primaryStage);
 
         // Set up the user interface
-        ui.setupUI();
+        ui.setupUi();
 
         // Display the user interface
         ui.show();
