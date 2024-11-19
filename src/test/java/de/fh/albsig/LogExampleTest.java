@@ -30,12 +30,15 @@ class Log4j2ConfigTest {
     private static StringWriter consoleOutput;
 
     /**
-     * Sets up the file and console appender before all tests.
+     * Sets up the file and console appender before all tests. Ensures that the logfile is deleted after Test
+     * BUGFIX: Addresses an issue where the logfile would not be deleted at runtime, even if intended.
+     * Using .deleteOnExit() ensures the file is properly scheduled for deletion when the JVM exits, bypassing the problem.
      *
      * @throws IOException if the log file cannot be created.
      */
     @BeforeAll
     static void setUpBeforeAll() throws IOException {
+        LOG_FILE.deleteOnExit();
 
         LoggerContext context = (LoggerContext) LogManager.getContext(false);
         Configuration config = context.getConfiguration();
@@ -57,15 +60,6 @@ class Log4j2ConfigTest {
         context.updateLoggers();
     }
 
-    /**
-     * Cleans up the log file after all tests.
-     */
-    @AfterAll
-    static void tearDownAfterAll() {
-        if (LOG_FILE.exists()) {
-            LOG_FILE.delete();
-        }
-    }
 
     @Test
     void testTraceNotLoggedToFile() throws IOException {
@@ -190,6 +184,7 @@ class Log4j2ConfigTest {
             assertFalse(logFileContent.toString().contains(unexpectedMessage),
                     "Log file should not contain: " + unexpectedMessage);
         }
+        
     }
 
     /**
