@@ -116,6 +116,13 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.puppycrawl.tools</groupId>
+                                <artifactId>checkstyle</artifactId>
+                                <version>[8.18,)</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
 
                     <!-- PMD Plugin for static code analysis -->
@@ -127,7 +134,17 @@
                             <rulesets>
                                 <ruleset>src/main/resources/pmd-custom-ruleset.xml</ruleset>
                             </rulesets>
+                            <printFailingErrors>true</printFailingErrors>
+                            <verbose>true</verbose>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
 
                     <!-- SpotBugs Plugin for detecting bugs -->
@@ -140,6 +157,14 @@
                             <threshold>Low</threshold>
                             <failOnError>true</failOnError>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
 
                     <!-- JavaFX Maven Plugin -->
