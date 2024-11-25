@@ -1,121 +1,209 @@
 package de.fh.albsig;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.io.StringWriter;
 
-public class LogExampleTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    private static final Logger logger = LogManager.getLogger(LogExampleTest.class);
-    private TestAppender testAppender;
-    private static final String LOG_FILE_PATH = "logs/main.log";
+/**
+ * Tests the Log4j2 configuration for console and file outputs.
+ */
+class Log4j2ConfigTest {
 
-    @BeforeEach
-    public void setUp() {
+    private static final Logger TEST_LOGGER = LogManager.getLogger(Log4j2ConfigTest.class);
+    private static final File LOG_FILE = new File("logs/application.log");
+    private static StringWriter consoleOutput;
+
+    /**
+     * Sets up the file and console appender before all tests. Ensures that the logfile is deleted after Test
+     * BUGFIX: Addresses an issue where the logfile would not be deleted at runtime, even if intended.
+     * Using .deleteOnExit() ensures the file is properly scheduled for deletion when the JVM exits, bypassing the problem.
+     *
+     * @throws IOException if the log file cannot be created.
+     */
+    @BeforeAll
+    static void setUpBeforeAll() throws IOException {
+        LOG_FILE.deleteOnExit();
+
         LoggerContext context = (LoggerContext) LogManager.getContext(false);
         Configuration config = context.getConfiguration();
 
-        // Create a test appender to collect log events
-        testAppender = new TestAppender("TestAppender");
-        testAppender.start(); // Start the appender
-        config.getRootLogger().addAppender(testAppender, null, null);
+        PatternLayout layout = PatternLayout.newBuilder()
+                .withPattern("%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n")
+                .build();
 
-        // Configure file appender to log to a specific file
-        try (FileWriter writer = new FileWriter(LOG_FILE_PATH, false)) {
-            writer.write(""); // Clear existing file content
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        consoleOutput = new StringWriter();
+        WriterAppender writerAppender = WriterAppender.newBuilder()
+                .setName("TestConsoleAppender")
+                .setTarget(consoleOutput)
+                .setLayout(layout)
+                .build();
+        writerAppender.start();
 
+        LoggerConfig loggerConfig = config.getLoggerConfig(Log4j2ConfigTest.class.getName());
+        loggerConfig.addAppender(writerAppender, null, null);
         context.updateLoggers();
     }
 
-    @AfterEach
-    public void tearDown() {
-        LoggerContext context = (LoggerContext) LogManager.getContext(false);
-        Configuration config = context.getConfiguration();
-        config.getRootLogger().removeAppender("TestAppender");
-        testAppender.stop(); // Stop the appender
-        context.updateLoggers();
 
-        // Truncate the test log file after the test to avoid locking issues
-        try (FileWriter writer = new FileWriter(LOG_FILE_PATH, false)) {
-            writer.write(""); // Clear existing file content
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Test
+    void testTraceNotLoggedToFile() throws IOException {
+        TEST_LOGGER.trace("This is a TRACE message");
+        waitForLogsToBeWritten();
+        assertFileDoesNotContain("This is a TRACE message");
     }
 
     @Test
-    public void testLoggingToConsoleAndFile() throws IOException {
-        // Log messages
-        logger.info("This is an info message");
-        logger.warn("This is a warning message");
-        logger.error("This is an error message");
+    void testDebugNotLoggedToFile() throws IOException {
+        TEST_LOGGER.debug("This is a DEBUG message");
+        waitForLogsToBeWritten();
+        assertFileDoesNotContain("This is a DEBUG message");
+    }
 
-        // Allow a slight delay for the logging system to process events
+    @Test
+    void testInfoNotLoggedToFile() throws IOException {
+        TEST_LOGGER.info("This is an INFO message");
+        waitForLogsToBeWritten();
+        assertFileDoesNotContain("This is an INFO message");
+    }
+
+    @Test
+    void testWarnNotLoggedToFile() throws IOException {
+        TEST_LOGGER.warn("This is a WARN message");
+        waitForLogsToBeWritten();
+        assertFileDoesNotContain("This is a WARN message");
+    }
+
+    @Test
+    void testErrorLoggedToFile() throws IOException {
+        TEST_LOGGER.error("This is an ERROR message");
+        waitForLogsToBeWritten();
+        assertFileContains("This is an ERROR message");
+    }
+
+    @Test
+    void testFatalLoggedToFile() throws IOException {
+        TEST_LOGGER.fatal("This is a FATAL message");
+        waitForLogsToBeWritten();
+        assertFileContains("This is a FATAL message");
+    }
+
+    @Test
+    void testTraceNotLoggedToConsole() {
+        TEST_LOGGER.trace("This is a TRACE message");
+        assertConsoleDoesNotContain("This is a TRACE message");
+    }
+
+    @Test
+    void testDebugNotLoggedToConsole() {
+        TEST_LOGGER.debug("This is a DEBUG message");
+        assertConsoleDoesNotContain("This is a DEBUG message");
+    }
+
+    @Test
+    void testInfoLoggedToConsole() {
+        TEST_LOGGER.info("This is an INFO message");
+        assertConsoleContains("This is an INFO message");
+    }
+
+    @Test
+    void testWarnLoggedToConsole() {
+        TEST_LOGGER.warn("This is a WARN message");
+        assertConsoleContains("This is a WARN message");
+    }
+
+    @Test
+    void testErrorLoggedToConsole() {
+        TEST_LOGGER.error("This is an ERROR message");
+        assertConsoleContains("This is an ERROR message");
+    }
+
+    @Test
+    void testFatalLoggedToConsole() {
+        TEST_LOGGER.fatal("This is a FATAL message");
+        assertConsoleContains("This is a FATAL message");
+    }
+
+    /**
+     * Waits briefly to ensure asynchronous logs are written.
+     */
+    private void waitForLogsToBeWritten() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
 
-        // Check if the messages are logged to the console using the test appender
-        List<LogEvent> events = testAppender.getLogEvents();
-        if (events.stream().noneMatch(event -> event.getMessage().getFormattedMessage().equals("This is an info message"))) {
-            fail("Info message was not logged to console.");
-        }
-        if (events.stream().noneMatch(event -> event.getMessage().getFormattedMessage().equals("This is a warning message"))) {
-            fail("Warning message was not logged to console.");
-        }
-        if (events.stream().noneMatch(event -> event.getMessage().getFormattedMessage().equals("This is an error message"))) {
-            fail("Error message was not logged to console.");
-        }
-
-        // Check if the messages are logged to the file
-        List<String> logLines = Files.readAllLines(Path.of(LOG_FILE_PATH));
-        if (logLines.stream().noneMatch(line -> line.contains("This is an info message"))) {
-            fail("Info message was not logged to file.");
-        }
-        if (logLines.stream().noneMatch(line -> line.contains("This is a warning message"))) {
-            fail("Warning message was not logged to file.");
-        }
-        if (logLines.stream().noneMatch(line -> line.contains("This is an error message"))) {
-            fail("Error message was not logged to file.");
+    /**
+     * Asserts that the log file contains the expected message.
+     *
+     * @param expectedMessage the message to check for.
+     * @throws IOException if the log file cannot be read.
+     */
+    private void assertFileContains(String expectedMessage) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(LOG_FILE))) {
+            StringBuilder logFileContent = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                logFileContent.append(line);
+            }
+            assertTrue(logFileContent.toString().contains(expectedMessage),
+                    "Log file should contain: " + expectedMessage);
         }
     }
 
-    private static class TestAppender extends AbstractAppender {
-        private final List<LogEvent> logEvents = new CopyOnWriteArrayList<>();
-
-        protected TestAppender(String name) {
-            super(name, null, PatternLayout.createDefaultLayout(), false, null);
+    /**
+     * Asserts that the log file does not contain the unexpected message.
+     *
+     * @param unexpectedMessage the message to check for.
+     * @throws IOException if the log file cannot be read.
+     */
+    private void assertFileDoesNotContain(String unexpectedMessage) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(LOG_FILE))) {
+            StringBuilder logFileContent = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                logFileContent.append(line);
+            }
+            assertFalse(logFileContent.toString().contains(unexpectedMessage),
+                    "Log file should not contain: " + unexpectedMessage);
         }
+        
+    }
 
-        @Override
-        public void append(LogEvent event) {
-            logEvents.add(event);
-        }
+    /**
+     * Asserts that the console output contains the expected message.
+     *
+     * @param expectedMessage the message to check for.
+     */
+    private void assertConsoleContains(String expectedMessage) {
+        assertTrue(consoleOutput.toString().contains(expectedMessage),
+                "Console log should contain: " + expectedMessage);
+    }
 
-        public List<LogEvent> getLogEvents() {
-            return logEvents;
-        }
+    /**
+     * Asserts that the console output does not contain the unexpected message.
+     *
+     * @param unexpectedMessage the message to check for.
+     */
+    private void assertConsoleDoesNotContain(String unexpectedMessage) {
+        assertFalse(consoleOutput.toString().contains(unexpectedMessage),
+                "Console log should not contain: " + unexpectedMessage);
     }
 }

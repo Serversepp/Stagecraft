@@ -8,57 +8,69 @@
     <artifactId>Stagecraft</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <!-- Define all versions in properties for easier management -->
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>19</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+        <maven.clean.plugin.version>3.4.0</maven.clean.plugin.version>
+        <maven.surefire.plugin.version>3.3.0</maven.surefire.plugin.version>
+        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+        <exec.maven.plugin.version>1.6.0</exec.maven.plugin.version>
+        <checkstyle.plugin.version>3.5.0</checkstyle.plugin.version>
+        <pmd.plugin.version>3.15.0</pmd.plugin.version>
+        <spotbugs.plugin.version>4.8.5.0</spotbugs.plugin.version>
+        <log4j.version>2.20.0</log4j.version>
+        <mockito.version>5.11.0</mockito.version>
+        <junit.version>5.7.0</junit.version>
     </properties>
+
     <build>
         <plugins>
             <!-- Clean Build -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>${maven.clean.plugin.version}</version>
             </plugin>
 
             <!-- Surefire Plugin for Testing -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven.surefire.plugin.version}</version>
             </plugin>
 
-            <!-- Logging with Log4J -->
+            <!-- Compiler Plugin for setting source/target Java version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
-    <!-- Profile für Code-Qualitätschecks -->
+    <!-- Profiles for additional functionality -->
     <profiles>
         <profile>
             <id>test-code</id>
             <build>
                 <plugins>
-                    <!-- RUN Code -->
+                    <!-- Run code using Exec Maven Plugin -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
+                        <version>${exec.maven.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>run-main</id>
-                                <phase>package</phase> <!-- Bind to a lifecycle phase -->
+                                <phase>package</phase>
                                 <goals>
                                     <goal>java</goal>
                                 </goals>
@@ -69,9 +81,19 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- Configure Surefire Plugin to skip tests in this profile -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.version}</version>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>code-quality</id>
             <build>
@@ -80,7 +102,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>${checkstyle.plugin.version}</version>
                         <configuration>
                             <configLocation>src/main/resources/google_checks.xml</configLocation>
                             <failOnViolation>true</failOnViolation>
@@ -103,11 +125,11 @@
                         </dependencies>
                     </plugin>
 
-                    <!-- PMD Plugin -->
+                    <!-- PMD Plugin for static code analysis -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-pmd-plugin</artifactId>
-                        <version>3.15.0</version>
+                        <version>${pmd.plugin.version}</version>
                         <configuration>
                             <rulesets>
                                 <ruleset>src/main/resources/pmd-custom-ruleset.xml</ruleset>
@@ -125,11 +147,11 @@
                         </executions>
                     </plugin>
 
-                    <!-- SpotBugs Plugin -->
+                    <!-- SpotBugs Plugin for detecting bugs -->
                     <plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
-                        <version>4.8.5.0</version>
+                        <version>${spotbugs.plugin.version}</version>
                         <configuration>
                             <effort>Max</effort>
                             <threshold>Low</threshold>
@@ -144,7 +166,8 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Java FX Plugin -->
+
+                    <!-- JavaFX Maven Plugin -->
                     <plugin>
                         <groupId>org.openjfx</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
@@ -159,46 +182,56 @@
     </profiles>
 
     <dependencies>
+        <!-- JavaFX Controls -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+
+        <!-- Checkstyle -->
         <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
             <version>[8.18,)</version>
         </dependency>
-        <!-- JUnit and Mockito Dependencies -->
+
+        <!-- JUnit Dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-            <version>5.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-            <version>5.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>5.11.0</version>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Log4J Dependency -->
+        <!-- Mockito -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Log4J Core -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.20.0</version>
+            <version>${log4j.version}</version>
         </dependency>
+
+        <!-- Log4J API -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.23.1</version>
+            <version>${log4j.version}</version>
+        </dependency>
+
+        <!-- Log4J Core Test -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core-test</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,26 +1,40 @@
 package de.fh.albsig;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The {@code Main} class serves as the entry point of the application.
- * It initializes logging using Log4j and logs the application start event.
+ * Main class to launch the JavaFX application.
  */
+public class Main extends Application {
 
-public class Main {
-    // Initialize the logger for the Main class
-    private static final Logger logger = LogManager.getLogger(Main.class);
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+
+    @Override
+    public void start(Stage primaryStage) {
+        LOGGER.info("Initializing the UI.");
+
+        // Create a UiFx object with the primaryStage
+        UiFx ui = new UiFx(primaryStage);
+
+        // Set up the user interface
+        ui.setupUi();
+
+        // Display the user interface
+        ui.show();
+
+        LOGGER.info("UI setup completed and displayed.");
+    }
 
     /**
-     * The main method that serves as the entry point for the application.
+     * Main method to launch the JavaFX application.
      *
-     * <p>Logs an informational message indicating that the application has started.</p>
-     *
-     * @param args command-line arguments passed to the program (not used in this application)
+     * @param args command-line arguments
      */
-
     public static void main(String[] args) {
-        logger.info("Application started.");
+        LOGGER.info("Launching JavaFX Application.");
+        Application.launch(args);
     }
 }
