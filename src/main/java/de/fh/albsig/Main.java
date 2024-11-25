@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Main class to launch the JavaFX application.
+ * Entry point for the JavaFX application.
  */
 public class Main extends Application {
 
@@ -14,27 +14,24 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        LOGGER.info("Initializing the UI.");
+        LOGGER.info("Starting JavaFX application.");
 
-        // Create a UiFx object with the primaryStage
-        UiFx ui = new UiFx(primaryStage);
-
-        // Set up the user interface
-        ui.setupUi();
-
-        // Display the user interface
-        ui.show();
-
-        LOGGER.info("UI setup completed and displayed.");
+        try {
+            MainMenu mainMenu = new MainMenu(primaryStage);
+            mainMenu.setupAndShow();
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while initializing the application.", e);
+        }
     }
 
     /**
-     * Main method to launch the JavaFX application.
+     * Main method to launch the application.
      *
      * @param args command-line arguments
      */
     public static void main(String[] args) {
-        LOGGER.info("Launching JavaFX Application.");
+        LOGGER.info("Launching the JavaFX application.");
         Application.launch(args);
+        LOGGER.info("Application exited.");
     }
 }

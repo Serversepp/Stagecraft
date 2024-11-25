@@ -1,118 +1,40 @@
 package de.fh.albsig;
 
+import javafx.scene.control.Button;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
-
-/**
- * A JavaFX UI class for setting up and displaying a simple user interface.
- */
 public class UiFx {
 
-    private final VBox layout;
-    private final Stage stage;
+    private static final Logger logger = LogManager.getLogger(UiFx.class);
 
-    /**
-     * Constructor to initialize the UI.
-     *
-     * @param stage the primary stage for the application
-     */
-    public UiFx(Stage stage) {
-        this.stage = stage;
-        this.layout = new VBox(10); // 10px spacing between components
-        Scene scene = new Scene(layout, 400, 300);
-
-        stage.setTitle("UiFx Example");
-        stage.setScene(scene);
-    }
-
-    /**
-     * Sets up the UI components.
-     */
-    public void setupUi() {
-        addLabel("Welcome to JavaFX!");
-
-        TextField nameField = addTextField("Enter your name");
-
-        addButton("Submit", () -> {
-            String name = nameField.getText();
-            showAlert("Hello, " + name + "!");
-        });
-
-        addDropdownMenu(new String[] {"Option 1", "Option 2", "Option 3"}, selected -> {
-            showAlert("You selected: " + selected);
-        });
-    }
-
-    /**
-     * Adds a label to the UI.
-     *
-     * @param text the text to display on the label
-     */
-    public void addLabel(String text) {
+    public void addLabel(VBox layout, String text) {
+        logger.info("Adding label with text: {}", text);
         Label label = new Label(text);
         layout.getChildren().add(label);
     }
 
-    /**
-     * Adds a text field to the UI with a placeholder.
-     *
-     * @param placeholder the placeholder text for the text field
-     * @return the created TextField object
-     */
-    public TextField addTextField(String placeholder) {
-        TextField textField = new TextField();
-        textField.setPromptText(placeholder);
-        layout.getChildren().add(textField);
-        return textField;
-    }
-
-    /**
-     * Adds a button to the UI with a click action.
-     *
-     * @param text    the button text
-     * @param onClick the action to perform when the button is clicked
-     */
-    public void addButton(String text, Runnable onClick) {
+    public void addButton(VBox layout, String text, Runnable onClick) {
+        logger.info("Adding button with text: {}", text);
         Button button = new Button(text);
-        button.setOnAction(event -> onClick.run());
+        button.setOnAction(event -> {
+            logger.debug("Button clicked: {}", text);
+            onClick.run();
+        });
         layout.getChildren().add(button);
     }
 
-    /**
-     * Adds a dropdown menu to the UI.
-     *
-     * @param options      the options for the dropdown
-     * @param onSelection  the action to perform when an option is selected
-     */
-    public void addDropdownMenu(String[] options, Consumer<String> onSelection) {
-        ComboBox<String> dropdown = new ComboBox<>();
-        dropdown.getItems().addAll(options);
-        dropdown.setOnAction(event -> {
-            String selected = dropdown.getValue();
-            onSelection.accept(selected);
-        });
-        layout.getChildren().add(dropdown);
-    }
-
-    /**
-     * Shows an alert dialog with a given message.
-     *
-     * @param message the message to display in the alert
-     */
     public void showAlert(String message) {
+        logger.warn("Showing alert: {}", message);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Message");
         alert.setHeaderText(null);
@@ -120,21 +42,16 @@ public class UiFx {
         alert.showAndWait();
     }
 
-    private void loadScreen(StackPane contentArea, String fxmlPath) {
+    public void loadScreen(StackPane contentArea, String fxmlPath) {
+        logger.info("Attempting to load screen: {}", fxmlPath);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent screen = loader.load();
             contentArea.getChildren().setAll(screen);
+            logger.info("Screen loaded successfully: {}", fxmlPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error loading screen: {}", fxmlPath, e);
             contentArea.getChildren().setAll(new Label("Error loading screen."));
         }
-    }
-
-    /**
-     * Displays the stage.
-     */
-    public void show() {
-        stage.show();
     }
 }
