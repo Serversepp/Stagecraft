@@ -1,12 +1,17 @@
 package de.fh.albsig;
 
+import java.io.IOException;
 import java.util.function.Consumer;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -113,6 +118,17 @@ public class UiFx {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void loadScreen(StackPane contentArea, String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent screen = loader.load();
+            contentArea.getChildren().setAll(screen);
+        } catch (IOException e) {
+            e.printStackTrace();
+            contentArea.getChildren().setAll(new Label("Error loading screen."));
+        }
     }
 
     /**
