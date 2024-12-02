@@ -7,7 +7,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +24,12 @@ public class CableCrossSectionCalculatorController {
     private TextField lengthField;
 
     @FXML
-    private ComboBox<String> materialComboBox;
+    private RadioButton copperRadioButton;
+
+    @FXML
+    private RadioButton aluminumRadioButton;
+
+    private ToggleGroup materialToggleGroup;
 
     @FXML
     private ComboBox<String> installationTypeComboBox;
@@ -50,8 +57,12 @@ public class CableCrossSectionCalculatorController {
 
     @FXML
     protected void initialize() {
+        // Initialize the ToggleGroup for material selection
+        materialToggleGroup = new ToggleGroup();
+        copperRadioButton.setToggleGroup(materialToggleGroup);
+        aluminumRadioButton.setToggleGroup(materialToggleGroup);
+
         // Populate combo boxes
-        materialComboBox.getItems().addAll("Copper", "Aluminum");
         installationTypeComboBox.getItems().addAll("Wall", "Conduit", "Underground");
         systemTypeComboBox.getItems().addAll("AC Single-phase", "AC Three-phase", "DC");
         inputMethodComboBox.getItems().addAll("Amperes", "Wattage");
@@ -70,7 +81,6 @@ public class CableCrossSectionCalculatorController {
         BooleanBinding allInputsProvided = Bindings.createBooleanBinding(
                 () -> isInputIncomplete(),
                 lengthField.textProperty(),
-                materialComboBox.valueProperty(),
                 installationTypeComboBox.valueProperty(),
                 systemTypeComboBox.valueProperty(),
                 voltageComboBox.valueProperty(),
@@ -85,13 +95,12 @@ public class CableCrossSectionCalculatorController {
 
     private boolean isInputIncomplete() {
         boolean isLengthEmpty = lengthField.getText().isEmpty();
-        boolean isMaterialMissing = materialComboBox.getValue() == null;
         boolean isInstallationTypeMissing = installationTypeComboBox.getValue() == null;
         boolean isSystemTypeMissing = systemTypeComboBox.getValue() == null;
         boolean isVoltageMissing = voltageComboBox.getValue() == null || ("Custom".equals(voltageComboBox.getValue()) && customVoltageField.getText().isEmpty());
         boolean isInputMethodMissing = inputMethodComboBox.getValue() == null || inputField.getText().isEmpty();
 
-        return isLengthEmpty || isMaterialMissing || isInstallationTypeMissing || isSystemTypeMissing || isVoltageMissing || isInputMethodMissing;
+        return isLengthEmpty || isInstallationTypeMissing || isSystemTypeMissing || isVoltageMissing || isInputMethodMissing;
     }
 
     private void updateVoltageOptions(String systemType) {
@@ -115,7 +124,7 @@ public class CableCrossSectionCalculatorController {
     private void calculateCrossSection() {
         try {
             double length = Double.parseDouble(lengthField.getText());
-            String material = materialComboBox.getValue();
+            String material = copperRadioButton.isSelected() ? "Copper" : "Aluminum";
             String installationType = installationTypeComboBox.getValue();
             String systemType = systemTypeComboBox.getValue();
             String voltageSelection = voltageComboBox.getValue();
@@ -135,11 +144,16 @@ public class CableCrossSectionCalculatorController {
                 current = wattage / voltage;
             }
 
+            // Calculate the cross-section
             double crossSection = computeCrossSection(length, material, installationType, systemType, voltage, wattage);
+
+            // Calculate the power loss
             double powerLoss = computePowerLoss(length, material, crossSection, current);
 
+            // Get the recommended standard wiring
             String standardWiring = getRecommendedStandardWiring(crossSection);
 
+            // Display the results
             resultField.setText(String.format("Loss: %.2fW, Cross-section: %.2f mm², Standard Wiring: %s", powerLoss, crossSection, standardWiring));
         } catch (Exception e) {
             logger.error("Error during calculation: ", e);
@@ -172,7 +186,6 @@ public class CableCrossSectionCalculatorController {
         double resistivity = "Copper".equals(material) ? 0.017 : 0.028; // Ohm mm²/m
         return (2 * resistivity * length * current * current) / crossSection;
     }
-
 
     private String getRecommendedStandardWiring(double crossSection) {
         if (crossSection <= 1.5) return "1.5 mm²";
