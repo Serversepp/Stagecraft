@@ -81,8 +81,8 @@ public class MainMenu {
 
         // Add function buttons
         addFunctionButton(buttonContainer, "Ohm Calculator", "/screens/ohmCalc.fxml", contentArea);
-        addFunctionButton(buttonContainer, "Screen 2", "/screens/Screen2.fxml", contentArea);
-        addFunctionButton(buttonContainer, "Screen 3", "/screens/Screen3.fxml", contentArea);
+        //addFunctionButton(buttonContainer, "Screen 2", "/screens/Screen2.fxml", contentArea);
+        //addFunctionButton(buttonContainer, "Screen 3", "/screens/Screen3.fxml", contentArea);
 
         // Add components to main layout
         mainLayout.getChildren().addAll(scrollPane, contentArea);

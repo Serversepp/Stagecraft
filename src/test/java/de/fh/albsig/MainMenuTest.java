@@ -82,7 +82,9 @@ public class MainMenuTest extends ApplicationTest {
 
     /**
      * Generates dynamic tests for all buttons in the button container.
-     *
+     * Big Issues with timing and Focus
+     * BUG Sometimes all test fail because the Stage gets out of focus even tho it is coded to force the focus
+     * Needs some rework regarding the focussing of the Window
      * @return A collection of dynamic tests for each button
      */
     @TestFactory
@@ -112,12 +114,10 @@ public class MainMenuTest extends ApplicationTest {
                             WaitForAsyncUtils.waitForFxEvents();
 
                             // Simulate a button click
-                            try {
-                                clickOn(button);
-                                WaitForAsyncUtils.waitForFxEvents(); // Wait for the async thread to complete
-                            } catch (Exception e) {
-                                Assertions.fail("An exception was thrown during the test: " + e.getMessage(), e);
-                            }
+
+                            clickOn(button);
+                            WaitForAsyncUtils.waitForFxEvents(); // Wait for the async thread to complete
+                            //TODO Add the async Exeption handler
 
                             WaitForAsyncUtils.waitForFxEvents();
 
