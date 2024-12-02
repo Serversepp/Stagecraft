@@ -1,4 +1,4 @@
-package de.fh.albsig;
+package de.fh.albsig.cablecrosssection;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
