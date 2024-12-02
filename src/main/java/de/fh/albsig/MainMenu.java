@@ -76,7 +76,7 @@ public class MainMenu {
         contentArea.setId("contentArea"); // Ensure this ID is set
 
         // Add function buttons
-        addFunctionButton(buttonContainer, "Ohm Calculator", "/screens/ohmCalc.fxml", contentArea);
+        addFunctionButton(buttonContainer, "Ohm Calculator", "/screens/OhmCalc.fxml", contentArea);
         //addFunctionButton(buttonContainer, "Screen 2", "/screens/Screen2.fxml", contentArea);
         //addFunctionButton(buttonContainer, "Screen 3", "/screens/Screen3.fxml", contentArea);
 
