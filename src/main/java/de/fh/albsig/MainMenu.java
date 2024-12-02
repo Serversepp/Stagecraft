@@ -77,6 +77,7 @@ public class MainMenu {
         // Content area for screens
         StackPane contentArea = new StackPane();
         uiFx.addLabel(new VBox(contentArea), "Select a screen by clicking a button.");
+        contentArea.setId("contentArea"); // Ensure this ID is set
 
         // Add function buttons
         addFunctionButton(buttonContainer, "Ohm Calculator", "/screens/ohmCalc.fxml", contentArea);
@@ -109,6 +110,7 @@ public class MainMenu {
         Button button = new Button(buttonText);
         button.setMaxWidth(Double.MAX_VALUE);
         button.setOnAction(event -> {
+            System.out.println("Button clicked: " + buttonText);
             logger.info("Button clicked: {}", buttonText);
             uiFx.loadScreen(contentArea, fxmlPath);
         });
