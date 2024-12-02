@@ -1,40 +1,62 @@
 package de.fh.albsig;
 
-import javafx.scene.control.Button;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
-import java.io.IOException;
-import java.util.function.Consumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+/**
+ * A utility class for JavaFX user interface operations.
+ * This class provides methods to add UI components, display alerts,
+ * and load FXML screens.
+ */
 
 public class UiFx {
 
-    private static final Logger logger = LogManager.getLogger(UiFx.class);
+    private static final Logger LOGGER = LogManager.getLogger(UiFx.class);
 
+    /**
+     * Adds a label with the specified text to the provided VBox layout.
+     *
+     * @param layout the VBox layout to which the label will be added
+     * @param text the text to display on the label
+     */
     public void addLabel(VBox layout, String text) {
-        logger.info("Adding label with text: {}", text);
+        LOGGER.info("Adding label with text: {}", text);
         Label label = new Label(text);
         layout.getChildren().add(label);
     }
 
+    /**
+     * Adds a button with the specified text to the provided VBox layout.
+     * The button triggers the provided action when clicked.
+     *
+     * @param layout the VBox layout to which the button will be added
+     * @param text the text to display on the button
+     * @param onClick the action to execute when the button is clicked
+     */
     public void addButton(VBox layout, String text, Runnable onClick) {
-        logger.info("Adding button with text: {}", text);
+        LOGGER.info("Adding button with text: {}", text);
         Button button = new Button(text);
         button.setOnAction(event -> {
-            logger.debug("Button clicked: {}", text);
+            LOGGER.debug("Button clicked: {}", text);
             onClick.run();
         });
         layout.getChildren().add(button);
     }
 
+    /**
+     * Displays an informational alert with the specified message.
+     *
+     * @param message the message to display in the alert
+     */
     public void showAlert(String message) {
-        logger.warn("Showing alert: {}", message);
+        LOGGER.warn("Showing alert: {}", message);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Message");
         alert.setHeaderText(null);
@@ -42,15 +64,22 @@ public class UiFx {
         alert.showAndWait();
     }
 
+    /**
+     * Loads an FXML screen from the specified path and sets it as the content
+     * of the provided StackPane.
+     *
+     * @param contentArea the StackPane where the FXML screen will be loaded
+     * @param fxmlPath the path to the FXML file
+     */
     public void loadScreen(StackPane contentArea, String fxmlPath) {
-        logger.info("Attempting to load screen: {}", fxmlPath);
+        LOGGER.info("Attempting to load screen: {}", fxmlPath);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent screen = loader.load();
             contentArea.getChildren().setAll(screen);
-            logger.info("Screen loaded successfully: {}", fxmlPath);
+            LOGGER.info("Screen loaded successfully: {}", fxmlPath);
         } catch (IOException e) {
-            logger.error("Error loading screen: {}", fxmlPath, e);
+            LOGGER.error("Error loading screen: {}", fxmlPath, e);
             contentArea.getChildren().setAll(new Label("Error loading screen."));
         }
     }

@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 /**
  * Controller for the Ohm Calculator screen.
  */
-public class ohmCalcController {
+public class OhmCalcController {
 
-    private static final Logger logger = LogManager.getLogger(ohmCalcController.class);
+    private static final Logger logger = LogManager.getLogger(OhmCalcController.class);
 
     @FXML
     private TextField voltageField;

@@ -2,16 +2,12 @@ package de.fh.albsig;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class responsible for creating and displaying the main menu with scrollable buttons.
@@ -104,7 +100,8 @@ public class MainMenu {
      * @param fxmlPath        the path to the FXML file for the screen
      * @param contentArea     the content area where the screen will be loaded
      */
-    private void addFunctionButton(VBox buttonContainer, String buttonText, String fxmlPath, StackPane contentArea) {
+    private void addFunctionButton(VBox buttonContainer,
+                                   String buttonText, String fxmlPath, StackPane contentArea) {
         logger.info("Adding button for: {}", buttonText);
 
         Button button = new Button(buttonText);
