@@ -13,9 +13,6 @@ import javafx.scene.control.ToggleGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Controller for the Cable Cross-Section Calculator screen.
- */
 public class CableCrossSectionCalculatorController {
 
     private static final Logger logger = LogManager.getLogger(CableCrossSectionCalculatorController.class);
@@ -54,6 +51,8 @@ public class CableCrossSectionCalculatorController {
 
     @FXML
     private Label resultField;
+
+    private final CableCrossSectionCalculatorLogic logic = new CableCrossSectionCalculatorLogic();
 
     @FXML
     protected void initialize() {
@@ -130,7 +129,7 @@ public class CableCrossSectionCalculatorController {
             String voltageSelection = voltageComboBox.getValue();
             double voltage = "Custom".equals(voltageSelection) ?
                     Double.parseDouble(customVoltageField.getText()) :
-                    parseStandardVoltage(voltageSelection);
+                    logic.parseStandardVoltage(voltageSelection);
 
             String inputMethod = inputMethodComboBox.getValue();
             double wattage;
@@ -144,14 +143,10 @@ public class CableCrossSectionCalculatorController {
                 current = wattage / voltage;
             }
 
-            // Calculate the cross-section
-            double crossSection = computeCrossSection(length, material, installationType, systemType, voltage, wattage);
-
-            // Calculate the power loss
-            double powerLoss = computePowerLoss(length, material, crossSection, current);
-
-            // Get the recommended standard wiring
-            String standardWiring = getRecommendedStandardWiring(crossSection);
+            // Use logic class for calculations
+            double crossSection = logic.computeCrossSection(length, material, installationType, systemType, voltage, wattage);
+            double powerLoss = logic.computePowerLoss(length, material, crossSection, current);
+            String standardWiring = logic.getRecommendedStandardWiring(crossSection);
 
             // Display the results
             resultField.setText(String.format("Loss: %.2fW, Cross-section: %.2f mm², Standard Wiring: %s", powerLoss, crossSection, standardWiring));
@@ -159,40 +154,6 @@ public class CableCrossSectionCalculatorController {
             logger.error("Error during calculation: ", e);
             showAlert("Error", "Invalid input. Please check your entries and try again.");
         }
-    }
-
-    private double parseStandardVoltage(String voltageSelection) {
-        switch (voltageSelection) {
-            case "110V": return 110;
-            case "220V": return 220;
-            case "230V": return 230;
-            case "380V": return 380;
-            case "400V": return 400;
-            case "415V": return 415;
-            case "12V": return 12;
-            case "24V": return 24;
-            case "48V": return 48;
-            default: throw new IllegalArgumentException("Invalid voltage selection");
-        }
-    }
-
-    private double computeCrossSection(double length, String material, String installationType, String systemType, double voltage, double wattage) {
-        double resistanceFactor = systemType.contains("Three-phase") ? Math.sqrt(3) : 1.0;
-        double materialResistivity = "Copper".equals(material) ? 0.017 : 0.028; // Ohm mm²/m
-        return (length * wattage) / (resistanceFactor * voltage * materialResistivity);
-    }
-
-    private double computePowerLoss(double length, String material, double crossSection, double current) {
-        double resistivity = "Copper".equals(material) ? 0.017 : 0.028; // Ohm mm²/m
-        return (2 * resistivity * length * current * current) / crossSection;
-    }
-
-    private String getRecommendedStandardWiring(double crossSection) {
-        if (crossSection <= 1.5) return "1.5 mm²";
-        if (crossSection <= 2.5) return "2.5 mm²";
-        if (crossSection <= 4.0) return "4.0 mm²";
-        if (crossSection <= 6.0) return "6.0 mm²";
-        return "Greater than 6.0 mm² (consult a professional)";
     }
 
     private void showAlert(String title, String message) {
