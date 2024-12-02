@@ -3,13 +3,7 @@ package de.fh.albsig.cablecrosssection;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,7 +101,7 @@ public class CableCrossSectionCalculatorController {
     private Label resultField;
 
     /**
-     * Logic class to perform calculations related to cable cross-sections and power loss.
+     * Logic class to perform calculations related to cable cross-sections and power loss.S
      */
     private final CableCrossSectionCalculatorLogic logic = new CableCrossSectionCalculatorLogic();
 
@@ -116,38 +110,38 @@ public class CableCrossSectionCalculatorController {
      */
     @FXML
     protected void initialize() {
+        // Initialize responsive design
+        setupResponsiveDesign();
+
         // Initialize the toggle group for material selection
         materialToggleGroup = new ToggleGroup();
         copperRadioButton.setToggleGroup(materialToggleGroup);
         aluminumRadioButton.setToggleGroup(materialToggleGroup);
 
-        // Populate the installation type dropdown
+        // Populate the dropdowns
         installationTypeComboBox.getItems().addAll("Wall", "Conduit", "Underground");
-
-        // Populate the system type dropdown
         systemTypeComboBox.getItems().addAll("AC Single-phase", "AC Three-phase", "DC");
-
-        // Populate the input method dropdown
         inputMethodComboBox.getItems().addAll("Amperes", "Wattage");
 
-        // Event listener for system type dropdown
+        // Event listener for system type
         systemTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            // Update voltage options and installation type visibility based on the system type
             updateVoltageOptions(newValue);
 
-            // Show installation type only for AC systems
             boolean isAC = "AC Single-phase".equals(newValue) || "AC Three-phase".equals(newValue);
             installationTypeContainer.setVisible(isAC);
-            installationTypeContainer.setManaged(isAC);
         });
 
-        // Event listener for voltage dropdown
+        // Show custom voltage field when "Custom" is selected
         voltageComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            // Show custom voltage input field if "Custom" is selected
             customVoltageField.setVisible("Custom".equals(newValue));
         });
 
-        // Disable the calculate button until all required inputs are provided
+        // Restrict numeric inputs for length, custom voltage, and input value fields
+        enforceNumericInput(lengthField);
+        enforceNumericInput(customVoltageField);
+        enforceNumericInput(inputField);
+
+        // Disable calculate button if inputs are incomplete
         BooleanBinding allInputsProvided = Bindings.createBooleanBinding(
                 this::isInputIncomplete,
                 lengthField.textProperty(),
@@ -160,6 +154,29 @@ public class CableCrossSectionCalculatorController {
         calculateButton.disableProperty().bind(allInputsProvided);
 
         logger.info("Cable Cross-Section Calculator initialized.");
+    }
+
+    /**
+     * Adjusts the scene size dynamically to fit the window's content.
+     * This method ensures the layout adapts when components are shown/hidden.
+     */
+    private void setupResponsiveDesign() {
+        installationTypeContainer.managedProperty().bind(installationTypeContainer.visibleProperty());
+        customVoltageField.managedProperty().bind(customVoltageField.visibleProperty());
+    }
+
+    /**
+     * Enforces numeric-only input for a given TextField.
+     *
+     * @param textField The TextField to apply the restriction to.
+     */
+    private void enforceNumericInput(TextField textField) {
+        textField.setTextFormatter(new TextFormatter<>(change -> {
+            if (change.getText().matches("\\d*")) {
+                return change; // Allow only numeric input
+            }
+            return null; // Reject non-numeric input
+        }));
     }
 
     /**
@@ -258,6 +275,7 @@ public class CableCrossSectionCalculatorController {
             logger.error("Error during calculation: ", e);
             showAlert("Error", "Invalid input. Please check your entries and try again.");
         }
+        logger.info("Cable Cross-Section Calculator calculated.");
     }
 
     /**
@@ -271,5 +289,6 @@ public class CableCrossSectionCalculatorController {
         alert.setTitle(title);
         alert.setContentText(message);
         alert.showAndWait();
+        logger.info("Cable Cross-Section Alert showed.");
     }
 }

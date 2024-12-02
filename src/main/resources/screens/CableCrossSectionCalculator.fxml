@@ -11,18 +11,18 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.fh.albsig.cablecrosssection.CableCrossSectionCalculatorController"
-      spacing="10" alignment="CENTER" prefWidth="400" prefHeight="600">
+      spacing="10" alignment="CENTER" prefWidth="400" prefHeight="600" fillWidth="true">
 
     <!-- Title -->
     <Label text="Cable Cross-Section Calculator" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
     <!-- Length Input -->
     <Label text="Enter Length (m):" />
-    <TextField fx:id="lengthField" promptText="Length in meters" />
+    <TextField fx:id="lengthField" promptText="Length in meters" maxWidth="150" alignment="CENTER" />
 
     <!-- System Type -->
     <Label text="Select System Type:" />
-    <ComboBox fx:id="systemTypeComboBox" promptText="Select System Type" />
+    <ComboBox fx:id="systemTypeComboBox" promptText="Select System Type" maxWidth="200" />
 
     <!-- Material Selection -->
     <Label text="Select Material:" />
@@ -34,22 +34,22 @@
     <!-- Installation Type -->
     <VBox fx:id="installationTypeContainer" alignment="CENTER" spacing="5" visible="false" managed="false">
         <Label text="Select Installation Type:" />
-        <ComboBox fx:id="installationTypeComboBox" promptText="Select Installation Type" />
+        <ComboBox fx:id="installationTypeComboBox" promptText="Select Installation Type" maxWidth="200" />
     </VBox>
 
     <!-- Voltage -->
     <Label text="Select Voltage:" />
-    <ComboBox fx:id="voltageComboBox" promptText="Standard or Custom Voltage" />
-    <TextField fx:id="customVoltageField" promptText="Enter custom voltage" visible="false" />
+    <ComboBox fx:id="voltageComboBox" promptText="Standard or Custom Voltage" maxWidth="200" />
+    <TextField fx:id="customVoltageField" promptText="Enter custom voltage" maxWidth="150" alignment="CENTER" visible="false" />
 
     <!-- Input Method -->
     <Label text="Input Method (Amperes or Wattage):" />
-    <ComboBox fx:id="inputMethodComboBox" promptText="Select Input Method" />
-    <TextField fx:id="inputField" promptText="Enter value" />
+    <ComboBox fx:id="inputMethodComboBox" promptText="Select Input Method" maxWidth="200" />
+    <TextField fx:id="inputField" promptText="Enter value" maxWidth="150" alignment="CENTER" />
 
     <!-- Calculate Button -->
-    <Button fx:id="calculateButton" text="Calculate Cross-Section" onAction="#calculateCrossSection" />
+    <Button fx:id="calculateButton" text="Calculate Cross-Section" onAction="#calculateCrossSection" maxWidth="150" />
 
     <!-- Result -->
-    <Label fx:id="resultField" text="Result: " />
+    <Label fx:id="resultField" text="Result: " alignment="CENTER" wrapText="true" />
 </VBox>
