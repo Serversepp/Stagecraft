@@ -8,7 +8,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.fh.albsig.CableCrossSectionCalculatorController"
-      spacing="10" alignment="CENTER" prefWidth="400" prefHeight="500">
+      spacing="10" alignment="CENTER" prefWidth="400" prefHeight="600">
 
     <!-- Title -->
     <Label text="Cable Cross-Section Calculator" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
@@ -16,6 +16,14 @@
     <!-- Length Input -->
     <Label text="Enter Length (m):" />
     <TextField fx:id="lengthField" promptText="Length in meters" />
+
+    <!-- Material Selection -->
+    <Label text="Select Material:" />
+    <ComboBox fx:id="materialComboBox" promptText="Copper or Aluminum" />
+
+    <!-- Installation Type -->
+    <Label text="Select Installation Type:" />
+    <ComboBox fx:id="installationTypeComboBox" promptText="Select Installation Type" />
 
     <!-- System Type -->
     <Label text="Select System Type:" />
