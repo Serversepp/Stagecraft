@@ -1,9 +1,10 @@
 package de.fh.albsig;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -21,10 +22,7 @@ public class CableCrossSectionCalculatorController {
     private TextField lengthField;
 
     @FXML
-    private ComboBox<String> phaseTypeComboBox;
-
-    @FXML
-    private ComboBox<String> currentTypeComboBox;
+    private ComboBox<String> systemTypeComboBox;
 
     @FXML
     private ComboBox<String> voltageComboBox;
@@ -39,22 +37,30 @@ public class CableCrossSectionCalculatorController {
     private TextField inputField;
 
     @FXML
+    private Button calculateButton;
+
+    @FXML
     private Label resultField;
 
     @FXML
     protected void initialize() {
-        // Populate combo boxes
-        phaseTypeComboBox.getItems().addAll("Single-phase", "Three-phase");
-        currentTypeComboBox.getItems().addAll("AC", "DC");
-        voltageComboBox.getItems().addAll("230V", "400V", "5V", "12V", "20V", "24V", "48V", "Custom");
+        // Populate system type dropdown
+        systemTypeComboBox.getItems().addAll("AC Single-phase", "AC Three-phase", "DC");
+
+        // Populate input method dropdown
         inputMethodComboBox.getItems().addAll("Amperes", "Wattage");
 
-        // Listener to show/hide custom voltage field
+        // Add listener to update voltage options based on system type
+        systemTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            updateVoltageOptions(newValue);
+        });
+
+        // Add listener to show/hide custom voltage field
         voltageComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             customVoltageField.setVisible("Custom".equals(newValue));
         });
 
-        // Listener to update the input field prompt
+        // Add listener to update the input field prompt
         inputMethodComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             if ("Amperes".equals(newValue)) {
                 inputField.setPromptText("Enter current (A)");
@@ -63,15 +69,53 @@ public class CableCrossSectionCalculatorController {
             }
         });
 
+        // Bind the button's disable property to incomplete inputs
+        BooleanBinding allInputsProvided = Bindings.createBooleanBinding(
+                () -> isInputIncomplete(),
+                lengthField.textProperty(),
+                systemTypeComboBox.valueProperty(),
+                voltageComboBox.valueProperty(),
+                customVoltageField.textProperty(),
+                inputMethodComboBox.valueProperty(),
+                inputField.textProperty()
+        );
+        calculateButton.disableProperty().bind(allInputsProvided);
+
         logger.info("Cable Cross-Section Calculator initialized.");
+    }
+
+    private boolean isInputIncomplete() {
+        // Check if required inputs are empty or missing
+        boolean isLengthEmpty = lengthField.getText().isEmpty();
+        boolean isSystemTypeMissing = systemTypeComboBox.getValue() == null;
+        boolean isVoltageMissing = voltageComboBox.getValue() == null || ("Custom".equals(voltageComboBox.getValue()) && customVoltageField.getText().isEmpty());
+        boolean isInputMethodMissing = inputMethodComboBox.getValue() == null || inputField.getText().isEmpty();
+
+        return isLengthEmpty || isSystemTypeMissing || isVoltageMissing || isInputMethodMissing;
+    }
+
+    private void updateVoltageOptions(String systemType) {
+        voltageComboBox.getItems().clear();
+        switch (systemType) {
+            case "AC Single-phase":
+                voltageComboBox.getItems().addAll("110V", "220V", "230V", "Custom");
+                break;
+            case "AC Three-phase":
+                voltageComboBox.getItems().addAll("380V", "400V", "415V", "Custom");
+                break;
+            case "DC":
+                voltageComboBox.getItems().addAll("12V", "24V", "48V", "Custom");
+                break;
+            default:
+                logger.warn("Unknown system type selected: " + systemType);
+        }
     }
 
     @FXML
     private void calculateCrossSection() {
         try {
             double length = Double.parseDouble(lengthField.getText());
-            String phaseType = phaseTypeComboBox.getValue();
-            String currentType = currentTypeComboBox.getValue();
+            String systemType = systemTypeComboBox.getValue();
             String voltageSelection = voltageComboBox.getValue();
             double voltage = "Custom".equals(voltageSelection) ?
                     Double.parseDouble(customVoltageField.getText()) :
@@ -91,7 +135,7 @@ public class CableCrossSectionCalculatorController {
             }
 
             // Calculate the cross-section
-            double crossSection = computeCrossSection(length, phaseType, currentType, voltage, wattage);
+            double crossSection = computeCrossSection(length, systemType, voltage, wattage);
 
             // Display the result
             resultField.setText(String.format("Result: %.2f mm²", crossSection));
@@ -104,20 +148,22 @@ public class CableCrossSectionCalculatorController {
 
     private double parseStandardVoltage(String voltageSelection) {
         switch (voltageSelection) {
+            case "110V": return 110;
+            case "220V": return 220;
             case "230V": return 230;
+            case "380V": return 380;
             case "400V": return 400;
-            case "5V": return 5;
+            case "415V": return 415;
             case "12V": return 12;
-            case "20V": return 20;
             case "24V": return 24;
             case "48V": return 48;
             default: throw new IllegalArgumentException("Invalid voltage selection");
         }
     }
 
-    private double computeCrossSection(double length, String phaseType, String currentType, double voltage, double wattage) {
-        double resistanceFactor = "Three-phase".equals(phaseType) ? Math.sqrt(3) : 1.0;
-        double efficiencyFactor = "AC".equals(currentType) ? 1.5 : 1.0;
+    private double computeCrossSection(double length, String systemType, double voltage, double wattage) {
+        double resistanceFactor = systemType.contains("Three-phase") ? Math.sqrt(3) : 1.0;
+        double efficiencyFactor = systemType.startsWith("AC") ? 1.5 : 1.0;
 
         // Calculate the base cross-section
         double baseCrossSection = (length * wattage) / (resistanceFactor * voltage * efficiencyFactor);

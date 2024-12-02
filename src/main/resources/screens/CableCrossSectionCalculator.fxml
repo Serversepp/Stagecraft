@@ -17,13 +17,9 @@
     <Label text="Enter Length (m):" />
     <TextField fx:id="lengthField" promptText="Length in meters" />
 
-    <!-- Phase Type -->
-    <Label text="Select Phase Type:" />
-    <ComboBox fx:id="phaseTypeComboBox" promptText="Single-phase or Three-phase" />
-
-    <!-- Current Type -->
-    <Label text="Select Current Type:" />
-    <ComboBox fx:id="currentTypeComboBox" promptText="AC or DC" />
+    <!-- System Type -->
+    <Label text="Select System Type:" />
+    <ComboBox fx:id="systemTypeComboBox" promptText="Select System Type" />
 
     <!-- Voltage -->
     <Label text="Select Voltage:" />
@@ -36,7 +32,7 @@
     <TextField fx:id="inputField" promptText="Enter value" />
 
     <!-- Calculate Button -->
-    <Button text="Calculate Cross-Section" onAction="#calculateCrossSection" />
+    <Button fx:id="calculateButton" text="Calculate Cross-Section" onAction="#calculateCrossSection" />
 
     <!-- Result -->
     <Label fx:id="resultField" text="Result: " />
