@@ -63,6 +63,8 @@ public class MainMenu {
         // Title label
         uiFx.addLabel(mainLayout, "Welcome to the Main Menu!");
 
+
+
         // Scrollable button container
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
@@ -113,6 +115,15 @@ public class MainMenu {
             uiFx.loadScreen(contentArea, fxmlPath);
         });
         buttonContainer.getChildren().add(button);
+    }
+
+    /**
+     * Navigates back to the home screen.
+     */
+    private void returnToHome() {
+        logger.info("Returning to home screen.");
+        // Replace this with your default home screen setup logic
+        setupAndShow();
     }
 
 }
