@@ -10,77 +10,147 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Controller for the Cable Cross-Section Calculator application.
+ *
+ * This class manages user interactions, updates the UI, and delegates
+ * complex computations to the CableCrossSectionCalculatorLogic class.
+ */
 public class CableCrossSectionCalculatorController {
 
     private static final Logger logger = LogManager.getLogger(CableCrossSectionCalculatorController.class);
 
+    /**
+     * Input field for cable length (in meters).
+     */
     @FXML
     private TextField lengthField;
 
+    /**
+     * Radio button for selecting Copper as the cable material.
+     */
     @FXML
     private RadioButton copperRadioButton;
 
+    /**
+     * Radio button for selecting Aluminum as the cable material.
+     */
     @FXML
     private RadioButton aluminumRadioButton;
 
+    /**
+     * Toggle group to ensure only one material can be selected at a time.
+     */
     private ToggleGroup materialToggleGroup;
 
+    /**
+     * Dropdown for selecting the installation type (e.g., Wall, Conduit).
+     * This option is only visible for AC system types.
+     */
     @FXML
     private ComboBox<String> installationTypeComboBox;
 
+    /**
+     * Container for the installation type dropdown.
+     * This is dynamically shown or hidden based on the selected system type.
+     */
+    @FXML
+    private VBox installationTypeContainer;
+
+    /**
+     * Dropdown for selecting the type of electrical system (e.g., AC Single-phase).
+     */
     @FXML
     private ComboBox<String> systemTypeComboBox;
 
+    /**
+     * Dropdown for selecting standard or custom voltage values.
+     */
     @FXML
     private ComboBox<String> voltageComboBox;
 
+    /**
+     * Input field for entering a custom voltage value.
+     * This field is visible only when "Custom" is selected in the voltage dropdown.
+     */
     @FXML
     private TextField customVoltageField;
 
+    /**
+     * Dropdown for selecting the input method (Amperes or Wattage).
+     */
     @FXML
     private ComboBox<String> inputMethodComboBox;
 
+    /**
+     * Input field for entering the value corresponding to the selected input method.
+     * For example, if Amperes is selected, the user enters the current.
+     */
     @FXML
     private TextField inputField;
 
+    /**
+     * Button to trigger the cable cross-section calculation.
+     */
     @FXML
     private Button calculateButton;
 
+    /**
+     * Label to display the result of the cable cross-section calculation,
+     * including cross-section size, standard wiring recommendation, and power loss.
+     */
     @FXML
     private Label resultField;
 
+    /**
+     * Logic class to perform calculations related to cable cross-sections and power loss.
+     */
     private final CableCrossSectionCalculatorLogic logic = new CableCrossSectionCalculatorLogic();
 
+    /**
+     * Initializes the controller by setting up UI bindings, event listeners, and default values.
+     */
     @FXML
     protected void initialize() {
-        // Initialize the ToggleGroup for material selection
+        // Initialize the toggle group for material selection
         materialToggleGroup = new ToggleGroup();
         copperRadioButton.setToggleGroup(materialToggleGroup);
         aluminumRadioButton.setToggleGroup(materialToggleGroup);
 
-        // Populate combo boxes
+        // Populate the installation type dropdown
         installationTypeComboBox.getItems().addAll("Wall", "Conduit", "Underground");
+
+        // Populate the system type dropdown
         systemTypeComboBox.getItems().addAll("AC Single-phase", "AC Three-phase", "DC");
+
+        // Populate the input method dropdown
         inputMethodComboBox.getItems().addAll("Amperes", "Wattage");
 
-        // Add listener to update voltage options based on system type
+        // Event listener for system type dropdown
         systemTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            // Update voltage options and installation type visibility based on the system type
             updateVoltageOptions(newValue);
+
+            // Show installation type only for AC systems
+            boolean isAC = "AC Single-phase".equals(newValue) || "AC Three-phase".equals(newValue);
+            installationTypeContainer.setVisible(isAC);
+            installationTypeContainer.setManaged(isAC);
         });
 
-        // Add listener to show/hide custom voltage field
+        // Event listener for voltage dropdown
         voltageComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            // Show custom voltage input field if "Custom" is selected
             customVoltageField.setVisible("Custom".equals(newValue));
         });
 
-        // Bind the button's disable property to incomplete inputs
+        // Disable the calculate button until all required inputs are provided
         BooleanBinding allInputsProvided = Bindings.createBooleanBinding(
-                () -> isInputIncomplete(),
+                this::isInputIncomplete,
                 lengthField.textProperty(),
-                installationTypeComboBox.valueProperty(),
                 systemTypeComboBox.valueProperty(),
                 voltageComboBox.valueProperty(),
                 customVoltageField.textProperty(),
@@ -92,18 +162,32 @@ public class CableCrossSectionCalculatorController {
         logger.info("Cable Cross-Section Calculator initialized.");
     }
 
+    /**
+     * Checks if any required inputs are incomplete.
+     *
+     * @return true if any required input is missing, false otherwise.
+     */
     private boolean isInputIncomplete() {
         boolean isLengthEmpty = lengthField.getText().isEmpty();
-        boolean isInstallationTypeMissing = installationTypeComboBox.getValue() == null;
         boolean isSystemTypeMissing = systemTypeComboBox.getValue() == null;
         boolean isVoltageMissing = voltageComboBox.getValue() == null || ("Custom".equals(voltageComboBox.getValue()) && customVoltageField.getText().isEmpty());
         boolean isInputMethodMissing = inputMethodComboBox.getValue() == null || inputField.getText().isEmpty();
 
-        return isLengthEmpty || isInstallationTypeMissing || isSystemTypeMissing || isVoltageMissing || isInputMethodMissing;
+        return isLengthEmpty || isSystemTypeMissing || isVoltageMissing || isInputMethodMissing;
     }
 
+    /**
+     * Updates the voltage dropdown options based on the selected system type.
+     *
+     * @param systemType The selected system type (e.g., AC Single-phase, DC).
+     */
     private void updateVoltageOptions(String systemType) {
-        voltageComboBox.getItems().clear();
+        voltageComboBox.getItems().clear(); // Clear any existing options
+
+        if (systemType == null) {
+            return;
+        }
+
         switch (systemType) {
             case "AC Single-phase":
                 voltageComboBox.getItems().addAll("110V", "220V", "230V", "Custom");
@@ -117,45 +201,71 @@ public class CableCrossSectionCalculatorController {
             default:
                 logger.warn("Unknown system type selected: " + systemType);
         }
+
+        if (!voltageComboBox.getItems().isEmpty()) {
+            voltageComboBox.getSelectionModel().select(0); // Default to the first option
+        }
     }
 
+    /**
+     * Handles the calculation of cable cross-section and power loss.
+     *
+     * Reads user inputs, validates them, and uses the logic class to compute
+     * the required cross-section, power loss, and recommended wiring.
+     */
     @FXML
     private void calculateCrossSection() {
         try {
+            // Parse user inputs
             double length = Double.parseDouble(lengthField.getText());
             String material = copperRadioButton.isSelected() ? "Copper" : "Aluminum";
-            String installationType = installationTypeComboBox.getValue();
+            double conductivity = "Copper".equals(material) ? 56 : 37; // Conductivity for copper or aluminum
+            double voltageDrop = 5.0; // Default voltage drop in volts
             String systemType = systemTypeComboBox.getValue();
             String voltageSelection = voltageComboBox.getValue();
-            double voltage = "Custom".equals(voltageSelection) ?
-                    Double.parseDouble(customVoltageField.getText()) :
-                    logic.parseStandardVoltage(voltageSelection);
+            double voltage = "Custom".equals(voltageSelection)
+                    ? Double.parseDouble(customVoltageField.getText())
+                    : logic.parseStandardVoltage(voltageSelection);
 
             String inputMethod = inputMethodComboBox.getValue();
-            double wattage;
-            double current;
+            double cosPhi = 0.9; // Default power factor
+            double crossSection;
+            double powerLoss;
+            double current = 0; // Initialize current for power loss calculation
 
-            if ("Amperes".equals(inputMethod)) {
+            // Compute cross-section based on system type
+            if ("AC Three-phase".equals(systemType)) {
+                double powerInKW = Double.parseDouble(inputField.getText());
+                current = (powerInKW * 1000) / (voltage * 1.732); // Current for three-phase
+                crossSection = logic.computeThreePhaseCrossSection(length, powerInKW, voltage, cosPhi, conductivity, voltageDrop);
+            } else if ("AC Single-phase".equals(systemType)) {
                 current = Double.parseDouble(inputField.getText());
-                wattage = current * voltage;
+                crossSection = logic.computeSinglePhaseCrossSection(length, current, cosPhi, conductivity, voltageDrop);
             } else {
-                wattage = Double.parseDouble(inputField.getText());
-                current = wattage / voltage;
+                throw new IllegalArgumentException("Invalid system type");
             }
 
-            // Use logic class for calculations
-            double crossSection = logic.computeCrossSection(length, material, installationType, systemType, voltage, wattage);
-            double powerLoss = logic.computePowerLoss(length, material, crossSection, current);
+            // Compute power loss
+            powerLoss = logic.computePowerLoss(length, current, material, crossSection);
+
+            // Recommend standard wiring size
             String standardWiring = logic.getRecommendedStandardWiring(crossSection);
 
-            // Display the results
-            resultField.setText(String.format("Loss: %.2fW, Cross-section: %.2f mm², Standard Wiring: %s", powerLoss, crossSection, standardWiring));
+            // Display results
+            resultField.setText(String.format("Cross-section: %.2f mm², Standard Wiring: %s, Power Loss: %.2f W",
+                    crossSection, standardWiring, powerLoss));
         } catch (Exception e) {
             logger.error("Error during calculation: ", e);
             showAlert("Error", "Invalid input. Please check your entries and try again.");
         }
     }
 
+    /**
+     * Displays an alert message for errors or invalid inputs.
+     *
+     * @param title   The title of the alert dialog.
+     * @param message The message to display in the alert dialog.
+     */
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Button?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -19,6 +20,10 @@
     <Label text="Enter Length (m):" />
     <TextField fx:id="lengthField" promptText="Length in meters" />
 
+    <!-- System Type -->
+    <Label text="Select System Type:" />
+    <ComboBox fx:id="systemTypeComboBox" promptText="Select System Type" />
+
     <!-- Material Selection -->
     <Label text="Select Material:" />
     <HBox alignment="CENTER" spacing="10">
@@ -27,12 +32,10 @@
     </HBox>
 
     <!-- Installation Type -->
-    <Label text="Select Installation Type:" />
-    <ComboBox fx:id="installationTypeComboBox" promptText="Select Installation Type" />
-
-    <!-- System Type -->
-    <Label text="Select System Type:" />
-    <ComboBox fx:id="systemTypeComboBox" promptText="Select System Type" />
+    <VBox fx:id="installationTypeContainer" alignment="CENTER" spacing="5" visible="false" managed="false">
+        <Label text="Select Installation Type:" />
+        <ComboBox fx:id="installationTypeComboBox" promptText="Select Installation Type" />
+    </VBox>
 
     <!-- Voltage -->
     <Label text="Select Voltage:" />

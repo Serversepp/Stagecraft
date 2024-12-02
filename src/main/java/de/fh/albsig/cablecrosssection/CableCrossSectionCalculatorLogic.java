@@ -24,35 +24,56 @@ public class CableCrossSectionCalculatorLogic {
     }
 
     /**
-     * Computes the cross-section of a cable.
+     * Computes the cable cross-section for a three-phase system.
      *
-     * @param length            The length of the cable in meters.
-     * @param material          The material of the cable ("Copper" or "Aluminum").
-     * @param installationType  The installation type (e.g., "Wall", "Conduit").
-     * @param systemType        The system type (e.g., "AC Single-phase").
-     * @param voltage           The voltage in volts.
-     * @param wattage           The power in watts.
-     * @return The computed cross-section in mm².
+     * Formula: A = 1.732 * L * ((kW * 1000) / (U * 1.732)) * cos(φ) / (y * U_a)
+     *
+     * @param length         The cable length (L) in meters.
+     * @param powerInKW      The power (kW).
+     * @param voltage        The system voltage (U) in volts.
+     * @param cosPhi         The power factor (cos φ).
+     * @param conductivity   The material conductivity (y) in S/m (e.g., 56 for copper, 37 for aluminum).
+     * @param voltageDrop    The allowable voltage drop (U_a) in volts.
+     * @return The required cross-section in mm².
      */
-    public double computeCrossSection(double length, String material, String installationType,
-                                      String systemType, double voltage, double wattage) {
-        double resistanceFactor = systemType.contains("Three-phase") ? Math.sqrt(3) : 1.0;
-        double materialResistivity = "Copper".equals(material) ? 0.017 : 0.028; // Ohm mm²/m
-        return (length * wattage) / (resistanceFactor * voltage * materialResistivity);
+    public double computeThreePhaseCrossSection(double length, double powerInKW, double voltage,
+                                                double cosPhi, double conductivity, double voltageDrop) {
+        double current = (powerInKW * 1000) / (voltage * 1.732); // Current (I) in amperes
+        return (1.732 * length * current * cosPhi) / (conductivity * voltageDrop);
+    }
+
+    /**
+     * Computes the cable cross-section for a single-phase system.
+     *
+     * Formula: A = (2 * L * I * cos(φ)) / (y * U_a)
+     *
+     * @param length         The cable length (L) in meters.
+     * @param current        The current (I) in amperes.
+     * @param cosPhi         The power factor (cos φ).
+     * @param conductivity   The material conductivity (y) in S/m (e.g., 56 for copper, 37 for aluminum).
+     * @param voltageDrop    The allowable voltage drop (U_a) in volts.
+     * @return The required cross-section in mm².
+     */
+    public double computeSinglePhaseCrossSection(double length, double current, double cosPhi,
+                                                 double conductivity, double voltageDrop) {
+        return (2 * length * current * cosPhi) / (conductivity * voltageDrop);
     }
 
     /**
      * Computes the power loss of a cable.
      *
-     * @param length       The length of the cable in meters.
+     * Formula: Power Loss = (2 * ρ * L * I²) / A
+     * where ρ is the material resistivity (Ohm mm²/m).
+     *
+     * @param length       The cable length (L) in meters.
+     * @param current      The current (I) in amperes.
      * @param material     The material of the cable ("Copper" or "Aluminum").
-     * @param crossSection The cross-section of the cable in mm².
-     * @param current      The current in amperes.
+     * @param crossSection The cross-section of the cable (A) in mm².
      * @return The power loss in watts.
      */
-    public double computePowerLoss(double length, String material, double crossSection, double current) {
-        double resistivity = "Copper".equals(material) ? 0.017 : 0.028; // Ohm mm²/m
-        return (2 * resistivity * length * current * current) / crossSection;
+    public double computePowerLoss(double length, double current, String material, double crossSection) {
+        double resistivity = "Copper".equals(material) ? 0.017 : 0.028; // Resistivity in Ohm mm²/m
+        return (2 * resistivity * length * Math.pow(current, 2)) / crossSection;
     }
 
     /**
@@ -66,6 +87,8 @@ public class CableCrossSectionCalculatorLogic {
         if (crossSection <= 2.5) return "2.5 mm²";
         if (crossSection <= 4.0) return "4.0 mm²";
         if (crossSection <= 6.0) return "6.0 mm²";
-        return "Greater than 6.0 mm² (consult a professional)";
+        if (crossSection <= 10.0) return "10.0 mm²";
+        if (crossSection <= 16.0) return "16.0 mm²";
+        return "Greater than 16.0 mm² (consult a professional)";
     }
 }
