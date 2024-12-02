@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.fh.albsig.CableCrossSectionCalculatorController"
+      spacing="10" alignment="CENTER" prefWidth="400" prefHeight="500">
+
+    <!-- Title -->
+    <Label text="Cable Cross-Section Calculator" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <!-- Length Input -->
+    <Label text="Enter Length (m):" />
+    <TextField fx:id="lengthField" promptText="Length in meters" />
+
+    <!-- Phase Type -->
+    <Label text="Select Phase Type:" />
+    <ComboBox fx:id="phaseTypeComboBox" promptText="Single-phase or Three-phase" />
+
+    <!-- Current Type -->
+    <Label text="Select Current Type:" />
+    <ComboBox fx:id="currentTypeComboBox" promptText="AC or DC" />
+
+    <!-- Voltage -->
+    <Label text="Select Voltage:" />
+    <ComboBox fx:id="voltageComboBox" promptText="Standard or Custom Voltage" />
+    <TextField fx:id="customVoltageField" promptText="Enter custom voltage" visible="false" />
+
+    <!-- Input Method -->
+    <Label text="Input Method (Amperes or Wattage):" />
+    <ComboBox fx:id="inputMethodComboBox" promptText="Select Input Method" />
+    <TextField fx:id="inputField" promptText="Enter value" />
+
+    <!-- Calculate Button -->
+    <Button text="Calculate Cross-Section" onAction="#calculateCrossSection" />
+
+    <!-- Result -->
+    <Label fx:id="resultField" text="Result: " />
+</VBox>
