@@ -256,7 +256,6 @@ public class CableCrossSectionCalculatorController {
                     ? Double.parseDouble(customVoltageField.getText())
                     : logic.parseStandardVoltage(voltageSelection);
 
-            String inputMethod = inputMethodComboBox.getValue();
             double cosPhi = 0.9; // Default power factor
             double crossSection;
             double powerLoss;
