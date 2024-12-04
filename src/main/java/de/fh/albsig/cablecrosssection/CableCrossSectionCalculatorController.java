@@ -3,20 +3,27 @@ package de.fh.albsig.cablecrosssection;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * Controller for the Cable Cross-Section Calculator application.
- *
  * This class manages user interactions, updates the UI, and delegates
  * complex computations to the CableCrossSectionCalculatorLogic class.
  */
 public class CableCrossSectionCalculatorController {
 
-    private static final Logger logger = LogManager.getLogger(CableCrossSectionCalculatorController.class);
+    private static final Logger logger =
+            LogManager.getLogger(CableCrossSectionCalculatorController.class);
 
     /**
      * Input field for cable length (in meters).
@@ -101,7 +108,7 @@ public class CableCrossSectionCalculatorController {
     private Label resultField;
 
     /**
-     * Logic class to perform calculations related to cable cross-sections and power loss.S
+     * Logic class to perform calculations related to cable cross-sections and power loss.
      */
     private final CableCrossSectionCalculatorLogic logic = new CableCrossSectionCalculatorLogic();
 
@@ -127,8 +134,9 @@ public class CableCrossSectionCalculatorController {
         systemTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             updateVoltageOptions(newValue);
 
-            boolean isAC = "AC Single-phase".equals(newValue) || "AC Three-phase".equals(newValue);
-            installationTypeContainer.setVisible(isAC);
+            boolean isAlternatingCurrent =
+                    "AC Single-phase".equals(newValue) || "AC Three-phase".equals(newValue);
+            installationTypeContainer.setVisible(isAlternatingCurrent);
         });
 
         // Show custom voltage field when "Custom" is selected
@@ -161,7 +169,8 @@ public class CableCrossSectionCalculatorController {
      * This method ensures the layout adapts when components are shown/hidden.
      */
     private void setupResponsiveDesign() {
-        installationTypeContainer.managedProperty().bind(installationTypeContainer.visibleProperty());
+        installationTypeContainer.managedProperty()
+                .bind(installationTypeContainer.visibleProperty());
         customVoltageField.managedProperty().bind(customVoltageField.visibleProperty());
     }
 
@@ -187,8 +196,12 @@ public class CableCrossSectionCalculatorController {
     private boolean isInputIncomplete() {
         boolean isLengthEmpty = lengthField.getText().isEmpty();
         boolean isSystemTypeMissing = systemTypeComboBox.getValue() == null;
-        boolean isVoltageMissing = voltageComboBox.getValue() == null || ("Custom".equals(voltageComboBox.getValue()) && customVoltageField.getText().isEmpty());
-        boolean isInputMethodMissing = inputMethodComboBox.getValue() == null || inputField.getText().isEmpty();
+        boolean isVoltageMissing = 
+                voltageComboBox.getValue() == null
+                        || ("Custom".equals(voltageComboBox.getValue())
+                        && customVoltageField.getText().isEmpty());
+        boolean isInputMethodMissing =
+                inputMethodComboBox.getValue() == null || inputField.getText().isEmpty();
 
         return isLengthEmpty || isSystemTypeMissing || isVoltageMissing || isInputMethodMissing;
     }
@@ -226,7 +239,6 @@ public class CableCrossSectionCalculatorController {
 
     /**
      * Handles the calculation of cable cross-section and power loss.
-     *
      * Reads user inputs, validates them, and uses the logic class to compute
      * the required cross-section, power loss, and recommended wiring.
      */
@@ -236,7 +248,7 @@ public class CableCrossSectionCalculatorController {
             // Parse user inputs
             double length = Double.parseDouble(lengthField.getText());
             String material = copperRadioButton.isSelected() ? "Copper" : "Aluminum";
-            double conductivity = "Copper".equals(material) ? 56 : 37; // Conductivity for copper or aluminum
+            double conductivity = "Copper".equals(material) ? 56 : 37; // Conductivity for CO or AL
             double voltageDrop = 5.0; // Default voltage drop in volts
             String systemType = systemTypeComboBox.getValue();
             String voltageSelection = voltageComboBox.getValue();
@@ -248,16 +260,20 @@ public class CableCrossSectionCalculatorController {
             double cosPhi = 0.9; // Default power factor
             double crossSection;
             double powerLoss;
-            double current = 0; // Initialize current for power loss calculation
+            double current; // Initialize current for power loss calculation
 
             // Compute cross-section based on system type
             if ("AC Three-phase".equals(systemType)) {
-                double powerInKW = Double.parseDouble(inputField.getText());
-                current = (powerInKW * 1000) / (voltage * 1.732); // Current for three-phase
-                crossSection = logic.computeThreePhaseCrossSection(length, powerInKW, voltage, cosPhi, conductivity, voltageDrop);
+                double powerInKiloWatts  = Double.parseDouble(inputField.getText());
+                current = (powerInKiloWatts * 1000) / (voltage * 1.732); // Current for three-phase
+                crossSection = logic.computeThreePhaseCrossSection(
+                        length, powerInKiloWatts, voltage, cosPhi, conductivity, voltageDrop);
+
             } else if ("AC Single-phase".equals(systemType)) {
                 current = Double.parseDouble(inputField.getText());
-                crossSection = logic.computeSinglePhaseCrossSection(length, current, cosPhi, conductivity, voltageDrop);
+                crossSection = logic.computeSinglePhaseCrossSection(
+                        length, current, cosPhi, conductivity, voltageDrop);
+
             } else {
                 throw new IllegalArgumentException("Invalid system type");
             }
@@ -269,7 +285,9 @@ public class CableCrossSectionCalculatorController {
             String standardWiring = logic.getRecommendedStandardWiring(crossSection);
 
             // Display results
-            resultField.setText(String.format("Cross-section: %.2f mm², Standard Wiring: %s, Power Loss: %.2f W",
+            resultField.setText(
+                    String.format(
+                            "Cross-section: %.2f mm², Standard Wiring: %s, Power Loss: %.2f W",
                     crossSection, standardWiring, powerLoss));
         } catch (Exception e) {
             logger.error("Error during calculation: ", e);
