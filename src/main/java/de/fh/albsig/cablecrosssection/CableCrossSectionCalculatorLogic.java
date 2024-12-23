@@ -1,6 +1,9 @@
 package de.fh.albsig.cablecrosssection;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * CableCrossSectionCalculatorLogic provides methods for calculating cable cross-section
  * sizes, power loss, and recommending standard wiring sizes for electrical installations.
@@ -26,6 +29,9 @@ package de.fh.albsig.cablecrosssection;
  */
 
 public class CableCrossSectionCalculatorLogic {
+
+    private static final Logger logger =
+            LogManager.getLogger(CableCrossSectionCalculatorLogic.class);
 
     /**
      * Parses the selected voltage string into a double.
@@ -53,17 +59,28 @@ public class CableCrossSectionCalculatorLogic {
      * Formula: A = 1.732 * L * ((kW * 1000) / (U * 1.732)) * cos(φ) / (y * U_a)
      *
      * @param length         The cable length (L) in meters.
-     * @param powerInKiWa      The power (kW).
+     * @param current        The current in A (I).
      * @param voltage        The system voltage (U) in volts.
      * @param cosPhi         The power factor (cos φ).
      * @param conductivity   The material conductivity (y) in S/m (e.g., 56 for copper).
      * @param voltageDrop    The allowable voltage drop (U_a) in volts.
      * @return The required cross-section in mm².
      */
-    public double computeThreePhaseCrossSection(double length, double powerInKiWa,
+    public double computeThreePhaseCrossSection(double length, double current,
                                                 double voltage, double cosPhi,
                                                 double conductivity, double voltageDrop) {
-        double current = (powerInKiWa * 1000) / (voltage * 1.732); // Current (I) in amperes
+        if (length < 0 ){
+            logger.info("Illegal length entered");
+            throw new IllegalArgumentException("Length is less or equal to 0");
+        }
+        if (voltage < 0 ){
+            logger.info("Illegal voltage entered");
+            throw new IllegalArgumentException("Voltage is less or equal to 0");
+        }
+        if (current < 0 ){
+            logger.info("Illegal current entered");
+            throw new IllegalArgumentException("Current is less or equal to 0");
+        }
         return (1.732 * length * current * cosPhi) / (conductivity * voltageDrop);
     }
 

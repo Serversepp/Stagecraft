@@ -266,7 +266,7 @@ public class CableCrossSectionCalculatorController {
                 double powerInKiloWatts  = Double.parseDouble(inputField.getText());
                 current = (powerInKiloWatts * 1000) / (voltage * 1.732); // Current for three-phase
                 crossSection = logic.computeThreePhaseCrossSection(
-                        length, powerInKiloWatts, voltage, cosPhi, conductivity, voltageDrop);
+                        length, current, voltage, cosPhi, conductivity, voltageDrop);
 
             } else if ("AC Single-phase".equals(systemType)) {
                 current = Double.parseDouble(inputField.getText());
