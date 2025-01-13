@@ -233,6 +233,14 @@
                                 <ruleset>src/main/resources/pmd-custom-ruleset.xml</ruleset>
                             </rulesets>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
 
                     <!-- SpotBugs Plugin for detecting bugs -->
@@ -245,6 +253,14 @@
                             <threshold>Low</threshold>
                             <failOnError>true</failOnError>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
 
                     <!-- JavaFX Maven Plugin -->
