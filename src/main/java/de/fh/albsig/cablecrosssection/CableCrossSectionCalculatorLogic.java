@@ -69,15 +69,15 @@ public class CableCrossSectionCalculatorLogic {
     public double computeThreePhaseCrossSection(double length, double current,
                                                 double voltage, double cosPhi,
                                                 double conductivity, double voltageDrop) {
-        if (length < 0 ){
+        if (length < 0) {
             logger.info("Illegal length entered");
             throw new IllegalArgumentException("Length is less or equal to 0");
         }
-        if (voltage < 0 ){
+        if (voltage < 0) {
             logger.info("Illegal voltage entered");
             throw new IllegalArgumentException("Voltage is less or equal to 0");
         }
-        if (current < 0 ){
+        if (current < 0) {
             logger.info("Illegal current entered");
             throw new IllegalArgumentException("Current is less or equal to 0");
         }
@@ -111,19 +111,25 @@ public class CableCrossSectionCalculatorLogic {
      * @param material     The material of the cable ("Copper" or "Aluminum").
      * @param crossSection The cross-section of the cable (A) in mm².
      * @return The power loss in watts.
+     * @throws IllegalArgumentException if the material is not "Copper" or "Aluminum".
      */
     public double computePowerLoss(double length, double current,
                                    String material, double crossSection) {
-        double resistivity = "Copper".equals(material) ? 0.017 : 0.028; // Resistivity in Ohm mm²/m
-        return (2 * resistivity * length * Math.pow(current, 2)) / crossSection;
-    }
+        if (!"Copper".equals(material) && !"Aluminum".equals(material)) {
+            throw new IllegalArgumentException("Invalid material: "
+                    + material + ". Only 'Copper' or 'Aluminum' are allowed.");
+        }
 
+        double resistivity = "Copper".equals(material) ? 0.017 : 0.028; // Resistivity in Ohm mm²/m
+        return ((2 * resistivity * length * Math.pow(current, 2)) / crossSection) / 10;
+    }
     /**
      * Recommends a standard wiring size based on the cross-section.
      *
      * @param crossSection The computed cross-section in mm².
      * @return The recommended standard wiring size.
      */
+
     public String getRecommendedStandardWiring(double crossSection) {
         if (crossSection <= 1.5) {
             return "1.5 mm²";

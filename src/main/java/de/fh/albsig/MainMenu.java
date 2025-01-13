@@ -118,13 +118,4 @@ public class MainMenu {
         buttonContainer.getChildren().add(button);
     }
 
-    /**
-     * Navigates back to the home screen.
-     */
-    private void returnToHome() {
-        logger.info("Returning to home screen.");
-        // Replace this with your default home screen setup logic
-        setupAndShow();
-    }
-
 }
