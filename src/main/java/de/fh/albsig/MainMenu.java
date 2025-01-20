@@ -81,7 +81,7 @@ public class MainMenu {
         addFunctionButton(buttonContainer, "Ohm Calculator", "/screens/OhmCalc.fxml", contentArea);
         addFunctionButton(buttonContainer, "Cable Cross-Section Calculator",
                 "/screens/CableCrossSectionCalculator.fxml", contentArea);
-        //addFunctionButton(buttonContainer, "Screen 2", "/screens/Screen2.fxml", contentArea);
+        addFunctionButton(buttonContainer, "Generator refuel calculator", "/screens/GeneratorRefuelCalc.fxml", contentArea);
         //addFunctionButton(buttonContainer, "Screen 3", "/screens/Screen3.fxml", contentArea);
 
         // Add components to main layout
