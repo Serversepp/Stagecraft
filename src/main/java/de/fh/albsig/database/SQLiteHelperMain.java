@@ -53,10 +53,12 @@ public class SQLiteHelperMain {
      */
     public static void initializeDatabase() {
         String createTableSQL = """
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS Aggregate (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                email TEXT NOT NULL UNIQUE
+                fuel_cap FLOAT NOT NULL,
+                consumption FLOAT NOT NULL,
+                power_output FLOAT NOT NULL
             );
         """;
 
@@ -66,35 +68,6 @@ public class SQLiteHelperMain {
             logger.info("Database initialized successfully.");
         } catch (SQLException e) {
             logger.error("Failed to initialize database: {}", e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Clears the entire database by dropping all tables.
-     */
-    public static void clearDatabase() {
-        try (Connection conn = connect()) {
-            // Query all table names from the SQLite schema
-            String fetchTablesSQL = """
-                SELECT name FROM sqlite_master
-                WHERE type = 'table' AND name NOT LIKE 'sqlite_%';
-            """;
-
-            try (PreparedStatement stmt = conn.prepareStatement(fetchTablesSQL);
-                 ResultSet rs = stmt.executeQuery()) {
-
-                while (rs.next()) {
-                    String tableName = rs.getString("name");
-                    String dropTableSQL = "DROP TABLE IF EXISTS " + tableName;
-                    try (PreparedStatement dropStmt = conn.prepareStatement(dropTableSQL)) {
-                        dropStmt.execute();
-                        logger.info("Dropped table: {}", tableName);
-                    }
-                }
-                logger.info("All tables have been dropped. The database is cleared.");
-            }
-        } catch (SQLException e) {
-            logger.error("Failed to clear the database: {}", e.getMessage(), e);
         }
     }
 }
