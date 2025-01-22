@@ -16,10 +16,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.condition.EnabledIf;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import org.junit.jupiter.api.Tag;
 import static org.mockito.Mockito.*;
 
+@Tag("ui")
 public class MainMenuTest extends ApplicationTest {
 
     private MainMenu mainMenu;
@@ -89,7 +90,6 @@ public class MainMenuTest extends ApplicationTest {
      * @return A collection of dynamic tests for each button
      */
     @TestFactory
-    @EnabledIf(expression = "!environment.contains('CI')", reason = "Test wird in CI-Umgebungen übersprungen")
     public Collection<DynamicTest> dynamicButtonTests() {
         // Locate the button container
         VBox buttonContainer = (VBox) lookup("#buttonContainer").query();
