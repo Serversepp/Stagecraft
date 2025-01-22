@@ -16,10 +16,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.condition.EnabledIf;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import static org.junit.jupiter.api.Tag;
 import static org.mockito.Mockito.*;
 
+@Tag("ui")
 public class MainMenuTest extends ApplicationTest {
 
     private MainMenu mainMenu;
