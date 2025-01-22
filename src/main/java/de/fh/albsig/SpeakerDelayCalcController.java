@@ -3,6 +3,7 @@ package de.fh.albsig;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,59 +12,55 @@ import org.apache.logging.log4j.Logger;
  */
 public class SpeakerDelayCalcController {
 
-    /**
-     * Label for the dimension selection.
-     */
-    @FXML
-    private Label dimensionlabel;
+    public VBox delayCalc;
 
     /**
      * ComboBox to select the dimension (1D, 2D, 3D).
      */
     @FXML
-    private ComboBox<String> dimensioncombobox;
+    private ComboBox<String> dimensionComboBox;
 
     /**
      * Label for the X-field.
      */
     @FXML
-    private Label xdimensionlabel;
+    private Label dimensionLabelX;
 
     /**
      * TextField for the X distance.
      */
     @FXML
-    private javafx.scene.control.TextField xdimensionfield;
+    private javafx.scene.control.TextField dimensionFieldX;
 
     /**
      * Label for the Y-field.
      */
     @FXML
-    private Label ydimensionlabel;
+    private Label dimensionLabelY;
 
     /**
      * TextField for the Y distance.
      */
     @FXML
-    private javafx.scene.control.TextField ydimensionfield;
+    private javafx.scene.control.TextField dimensionFieldY;
 
     /**
      * Label for the Z-field.
      */
     @FXML
-    private Label zdimensionlabel;
+    private Label dimensionLabelZ;
 
     /**
      * TextField for the Z distance.
      */
     @FXML
-    private javafx.scene.control.TextField zdimensionfield;
+    private javafx.scene.control.TextField dimensionFieldZ;
 
     /**
      * Label for displaying the calculation result.
      */
     @FXML
-    private Label resultlabel;
+    private Label resultLabel;
 
     /**
      * Logger for log output.
@@ -78,42 +75,42 @@ public class SpeakerDelayCalcController {
     public void initialize() {
         logger.info("Speaker Delay Calculator screen initialized.");
 
-        dimensioncombobox.getItems().addAll("OneDimensional", "TwoDimensional", "ThreeDimensional");
+        dimensionComboBox.getItems().addAll("OneDimensional", "TwoDimensional", "ThreeDimensional");
 
         // By default, show only X, hide Y and Z
-        xdimensionlabel.setVisible(true);
-        xdimensionfield.setVisible(true);
+        dimensionLabelX.setVisible(true);
+        dimensionFieldX.setVisible(true);
 
-        ydimensionlabel.setVisible(false);
-        ydimensionfield.setVisible(false);
+        dimensionLabelY.setVisible(false);
+        dimensionFieldY.setVisible(false);
 
-        zdimensionlabel.setVisible(false);
-        zdimensionfield.setVisible(false);
-        dimensioncombobox.valueProperty().addListener((observable, oldValue, newValue) -> {
+        dimensionLabelZ.setVisible(false);
+        dimensionFieldZ.setVisible(false);
+        dimensionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
                 case "OneDimensional":
-                    xdimensionlabel.setVisible(true);
-                    xdimensionfield.setVisible(true);
-                    ydimensionlabel.setVisible(false);
-                    ydimensionfield.setVisible(false);
-                    zdimensionlabel.setVisible(false);
-                    zdimensionfield.setVisible(false);
+                    dimensionLabelX.setVisible(true);
+                    dimensionFieldX.setVisible(true);
+                    dimensionLabelY.setVisible(false);
+                    dimensionFieldY.setVisible(false);
+                    dimensionLabelZ.setVisible(false);
+                    dimensionFieldZ.setVisible(false);
                     break;
                 case "TwoDimensional":
-                    xdimensionlabel.setVisible(true);
-                    xdimensionfield.setVisible(true);
-                    ydimensionlabel.setVisible(true);
-                    ydimensionfield.setVisible(true);
-                    zdimensionlabel.setVisible(false);
-                    zdimensionfield.setVisible(false);
+                    dimensionLabelX.setVisible(true);
+                    dimensionFieldX.setVisible(true);
+                    dimensionLabelY.setVisible(true);
+                    dimensionFieldY.setVisible(true);
+                    dimensionLabelZ.setVisible(false);
+                    dimensionFieldZ.setVisible(false);
                     break;
                 case "ThreeDimensional":
-                    xdimensionlabel.setVisible(true);
-                    xdimensionfield.setVisible(true);
-                    ydimensionlabel.setVisible(true);
-                    ydimensionfield.setVisible(true);
-                    zdimensionlabel.setVisible(true);
-                    zdimensionfield.setVisible(true);
+                    dimensionLabelX.setVisible(true);
+                    dimensionFieldX.setVisible(true);
+                    dimensionLabelY.setVisible(true);
+                    dimensionFieldY.setVisible(true);
+                    dimensionLabelZ.setVisible(true);
+                    dimensionFieldZ.setVisible(true);
                     break;
                 default:
                     logger.warn("Unknown dimension type selected: {}", newValue);
@@ -131,14 +128,14 @@ public class SpeakerDelayCalcController {
     public void calculateDelay() {
         logger.info("Calculate Speaker Delay button clicked.");
 
-        String selectedDimension = dimensioncombobox.getValue();
+        String selectedDimension = dimensionComboBox.getValue();
         if (selectedDimension == null) {
-            resultlabel.setText("Please select a dimension type first.");
+            resultLabel.setText("Please select a dimension type first.");
             return;
         }
-        double x = parseDoubleSafe(xdimensionfield.getText());
-        double y = parseDoubleSafe(ydimensionfield.getText());
-        double z = parseDoubleSafe(zdimensionfield.getText());
+        double x = parseDoubleSafe(dimensionFieldX.getText());
+        double y = parseDoubleSafe(dimensionFieldY.getText());
+        double z = parseDoubleSafe(dimensionFieldZ.getText());
 
         // Calculate distance in cm depending on the chosen dimension
         double distanceInCm;
@@ -156,7 +153,7 @@ public class SpeakerDelayCalcController {
                 break;
             default:
                 // Should never happen
-                resultlabel.setText("Unknown dimension type.");
+                resultLabel.setText("Unknown dimension type.");
                 return;
         }
         // Convert distance from centimeters to meters
@@ -172,7 +169,7 @@ public class SpeakerDelayCalcController {
         double timeInMilliseconds = timeInSeconds * 1000;
 
         // Display the result
-        resultlabel.setText(String.format("Delay: %.2f ms", timeInMilliseconds));
+        resultLabel.setText(String.format("Delay: %.2f ms", timeInMilliseconds));
     }
 
     /**
@@ -186,7 +183,7 @@ public class SpeakerDelayCalcController {
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            logger.warn("Could not parse '" + value + "' as double, using 0.0");
+            logger.warn("Could not parse '{}' as double, using 0.0", value);
             return 0.0;
         }
     }

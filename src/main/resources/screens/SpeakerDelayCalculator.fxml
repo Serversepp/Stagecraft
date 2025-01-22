@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.fh.albsig.SpeakerDelayCalcController"
-      fx:id="Delaycalc"
+      fx:id="delayCalc"
       spacing="10" alignment="CENTER" prefWidth="400" prefHeight="300">
 
     <!-- Title -->
@@ -17,23 +15,23 @@
 
     <!-- System Type -->
     <Label text="Select Dimension Type:" />
-    <ComboBox fx:id="dimensioncombobox" promptText="Select Dimension Type" maxWidth="200" />
+    <ComboBox fx:id="dimensionComboBox" promptText="Select Dimension Type" maxWidth="200" />
 
     <!-- Distance X -->
-    <Label fx:id="xdimensionlabel" text="Enter X Distance:" />
-    <TextField fx:id="xdimensionfield" promptText="X Distance in cm" maxWidth="150" alignment="CENTER" />
+    <Label fx:id="dimensionLabelX" text="Enter X Distance:" />
+    <TextField fx:id="dimensionFieldX" promptText="X Distance in cm" maxWidth="150" alignment="CENTER" />
 
     <!-- Distance Y -->
-    <Label fx:id="ydimensionlabel" text="Enter Y Distance:" />
-    <TextField fx:id="ydimensionfield" promptText="Y Distance in cm" maxWidth="150" alignment="CENTER" />
+    <Label fx:id="dimensionLabelY" text="Enter Y Distance:" />
+    <TextField fx:id="dimensionFieldY" promptText="Y Distance in cm" maxWidth="150" alignment="CENTER" />
 
     <!-- Distance Z -->
-    <Label fx:id="zdimensionlabel" text="Enter Z Distance:" />
-    <TextField fx:id="zdimensionfield" promptText="Z Distance in cm" maxWidth="150" alignment="CENTER" />
+    <Label fx:id="dimensionLabelZ" text="Enter Z Distance:" />
+    <TextField fx:id="dimensionFieldZ" promptText="Z Distance in cm" maxWidth="150" alignment="CENTER" />
 
     <!-- Calculate Button -->
     <Button text="Calculate Delay" onAction="#calculateDelay" />
 
     <!-- Result -->
-    <Label fx:id="resultlabel" text="Result: " />
+    <Label fx:id="resultLabel" text="Result: " />
 </VBox>
