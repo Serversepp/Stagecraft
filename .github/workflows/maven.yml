@@ -32,8 +32,8 @@ jobs:
     
     # Build the project with Maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml -Denv=CI
-    
+      run: mvn -B package --file pom.xml -Pgithub-ci
+      
     # Upload the JAR file as an artifact
     - name: Upload JAR as artifact
       uses: actions/upload-artifact@v3
