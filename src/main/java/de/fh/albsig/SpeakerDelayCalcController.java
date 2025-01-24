@@ -133,10 +133,27 @@ public class SpeakerDelayCalcController {
             resultLabel.setText("Please select a dimension type first.");
             return;
         }
-        double x = parseDoubleSafe(dimensionFieldX.getText());
-        double y = parseDoubleSafe(dimensionFieldY.getText());
-        double z = parseDoubleSafe(dimensionFieldZ.getText());
+        Double x = parseDoubleSafe(dimensionFieldX.getText(), "X");
+        if (x == null) {
+            return;
+        }
 
+
+        Double y = 0.0;
+        if (dimensionLabelY.isVisible()) {
+            y = parseDoubleSafe(dimensionFieldY.getText(), "Y");
+            if (y == null) {
+                return;
+            }
+        }
+
+        Double z = 0.0;
+        if (dimensionLabelZ.isVisible()) {
+            z = parseDoubleSafe(dimensionFieldZ.getText(), "Z");
+            if (z == null) {
+                return;
+            }
+        }
         // Calculate distance in cm depending on the chosen dimension
         double distanceInCm;
         switch (selectedDimension) {
@@ -179,12 +196,16 @@ public class SpeakerDelayCalcController {
      * @param value the string to parse
      * @return the parsed double or 0.0 if parsing fails
      */
-    private double parseDoubleSafe(String value) {
+    private Double parseDoubleSafe(String value, String fieldName) {
         try {
-            return Double.parseDouble(value);
+            String normalizedValue = value.replace(',', '.');
+            return Double.parseDouble(normalizedValue);
         } catch (NumberFormatException e) {
-            logger.warn("Could not parse '{}' as double, using 0.0", value);
-            return 0.0;
+            logger.warn("Invalid input for {}: '{}'", fieldName, value);
+            resultLabel.setText(String.format(
+                    "Please enter a valid number for field '%s' (input was: '%s').", fieldName, value
+            ));
+            return null;
         }
     }
 }
