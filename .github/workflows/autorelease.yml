@@ -1,0 +1,6 @@
+name: Autorelease
+on:
+  push:
+    branches: ["release"]
+  pull_request:
+    branches: ["release"]
