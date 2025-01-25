@@ -1,0 +1,30 @@
+name: Increment Snapshot Version
+
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  increment-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Increment snapshot version
+        run: |
+          mvn versions:set -DnextSnapshot=true
+          mvn versions:commit
+      - name: Commit new snapshot version
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add pom.xml
+          git commit -m "Increment snapshot version"
+          git push
