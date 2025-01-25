@@ -76,9 +76,9 @@ jobs:
           tag_name: ${{ env.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update main with release version
+      - name: Update master with release version
         run: |
           git fetch
-          git checkout main
-          git merge -X theirs --allow-unrelated-histories origin/release -m "Merge release into main"
-          git push origin main
+          git checkout master
+          git merge -X theirs --allow-unrelated-histories origin/release -m "Merge release into master"
+          git push origin master
