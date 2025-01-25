@@ -77,40 +77,19 @@ public class SpeakerDelayCalcController {
 
         dimensionComboBox.getItems().addAll("OneDimensional", "TwoDimensional", "ThreeDimensional");
 
-        // By default, show only X, hide Y and Z
-        dimensionLabelX.setVisible(true);
-        dimensionFieldX.setVisible(true);
+        // Default settings: X visible, Y & Z hidden
+        setFieldsVisibility(false, false);
 
-        dimensionLabelY.setVisible(false);
-        dimensionFieldY.setVisible(false);
-
-        dimensionLabelZ.setVisible(false);
-        dimensionFieldZ.setVisible(false);
         dimensionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
                 case "OneDimensional":
-                    dimensionLabelX.setVisible(true);
-                    dimensionFieldX.setVisible(true);
-                    dimensionLabelY.setVisible(false);
-                    dimensionFieldY.setVisible(false);
-                    dimensionLabelZ.setVisible(false);
-                    dimensionFieldZ.setVisible(false);
+                    setFieldsVisibility(false, false);
                     break;
                 case "TwoDimensional":
-                    dimensionLabelX.setVisible(true);
-                    dimensionFieldX.setVisible(true);
-                    dimensionLabelY.setVisible(true);
-                    dimensionFieldY.setVisible(true);
-                    dimensionLabelZ.setVisible(false);
-                    dimensionFieldZ.setVisible(false);
+                    setFieldsVisibility(true, false);
                     break;
                 case "ThreeDimensional":
-                    dimensionLabelX.setVisible(true);
-                    dimensionFieldX.setVisible(true);
-                    dimensionLabelY.setVisible(true);
-                    dimensionFieldY.setVisible(true);
-                    dimensionLabelZ.setVisible(true);
-                    dimensionFieldZ.setVisible(true);
+                    setFieldsVisibility(true, true);
                     break;
                 default:
                     logger.warn("Unknown dimension type selected: {}", newValue);
@@ -155,38 +134,87 @@ public class SpeakerDelayCalcController {
             }
         }
         // Calculate distance in cm depending on the chosen dimension
-        double distanceInCm;
+        double delayMs;
         switch (selectedDimension) {
             case "OneDimensional":
-                distanceInCm = x;
+                delayMs = calculateOneDimensional(x);
                 break;
             case "TwoDimensional":
-                // Pythagorean theorem in 2D
-                distanceInCm = Math.sqrt(x * x + y * y);
+                delayMs = calculateTwoDimensional(x, y);
                 break;
             case "ThreeDimensional":
-                // Pythagorean theorem in 3D
-                distanceInCm = Math.sqrt(x * x + y * y + z * z);
+                delayMs = calculateThreeDimensional(x, y, z);
                 break;
             default:
-                // Should never happen
                 resultLabel.setText("Unknown dimension type.");
                 return;
         }
-        // Convert distance from centimeters to meters
-        double distanceInMeters = distanceInCm / 100.0;
-
-        // Approximate speed of sound in air at 20°C (m/s)
-        double speedOfSound = 343.0;
-
-        // Time = distance / speed
-        double timeInSeconds = distanceInMeters / speedOfSound;
-
-        // Convert time to milliseconds
-        double timeInMilliseconds = timeInSeconds * 1000;
 
         // Display the result
-        resultLabel.setText(String.format("Delay: %.2f ms", timeInMilliseconds));
+        resultLabel.setText(String.format("Delay: %.2f ms", delayMs));
+    }
+
+    /**
+     * Calculates the delay for a one-dimensional distance (x).
+     *
+     * @param xInCm the distance in centimeters
+     * @return the resulting delay in milliseconds
+     */
+    public double calculateOneDimensional(double xInCm) {
+        return distanceToDelay(xInCm);
+    }
+
+    /**
+     * Calculates the delay for a two-dimensional distance (x, y).
+     * Uses the Pythagorean theorem in 2D: distance = sqrt(x^2 + y^2).
+     *
+     * @param xInCm the X distance in centimeters
+     * @param yInCm the Y distance in centimeters
+     * @return the resulting delay in milliseconds
+     */
+    public double calculateTwoDimensional(double xInCm, double yInCm) {
+        double distance = Math.sqrt(xInCm * xInCm + yInCm * yInCm);
+        return distanceToDelay(distance);
+    }
+
+    /**
+     * Calculates the delay for a three-dimensional distance (x, y, z).
+     * Uses the Pythagorean theorem in 3D: distance = sqrt(x^2 + y^2 + z^2).
+     *
+     * @param xInCm the X distance in centimeters
+     * @param yInCm the Y distance in centimeters
+     * @param zInCm the Z distance in centimeters
+     * @return the resulting delay in milliseconds
+     */
+    public double calculateThreeDimensional(double xInCm, double yInCm, double zInCm) {
+        double distance = Math.sqrt(xInCm * xInCm + yInCm * yInCm + zInCm * zInCm);
+        return distanceToDelay(distance);
+    }
+
+    /**
+     * Helper method to convert a distance in centimeters to a delay in milliseconds.
+     * Assumes a speed of sound of approximately 343 m/s.
+     *
+     * @param distanceInCm the distance in centimeters
+     * @return the delay in milliseconds
+     */
+    private double distanceToDelay(double distanceInCm) {
+        double speedOfSound = 343.0;  // speed of sound in m/s
+        double distanceInMeters = distanceInCm / 100.0;
+        double timeInSeconds = distanceInMeters / speedOfSound;
+        return timeInSeconds * 1000.0;
+    }
+
+    /**
+     * Helper to show/hide the X, Y, Z labels and text fields.
+     */
+    private void setFieldsVisibility(boolean showY, boolean showZ) {
+        dimensionLabelX.setVisible(true);
+        dimensionFieldX.setVisible(true);
+        dimensionLabelY.setVisible(showY);
+        dimensionFieldY.setVisible(showY);
+        dimensionLabelZ.setVisible(showZ);
+        dimensionFieldZ.setVisible(showZ);
     }
 
     /**
