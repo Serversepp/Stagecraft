@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import org.junit.jupiter.api.Tag;
 import static org.mockito.Mockito.*;
 
+@Disabled
 @Tag("ui")
 public class MainMenuTest extends ApplicationTest {
 

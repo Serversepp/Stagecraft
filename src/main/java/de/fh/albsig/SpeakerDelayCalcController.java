@@ -157,11 +157,11 @@ public class SpeakerDelayCalcController {
     /**
      * Calculates the delay for a one-dimensional distance (x).
      *
-     * @param xInCm the distance in centimeters
+     * @param xinCm the distance in centimeters
      * @return the resulting delay in milliseconds
      */
-    public double calculateOneDimensional(double xInCm) {
-        return distanceToDelay(xInCm);
+    public double calculateOneDimensional(double xinCm) {
+        return distanceToDelay(xinCm);
     }
 
     /**
