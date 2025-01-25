@@ -168,12 +168,12 @@ public class SpeakerDelayCalcController {
      * Calculates the delay for a two-dimensional distance (x, y).
      * Uses the Pythagorean theorem in 2D: distance = sqrt(x^2 + y^2).
      *
-     * @param xInCm the X distance in centimeters
-     * @param yInCm the Y distance in centimeters
+     * @param xinCm the X distance in centimeters
+     * @param yinCm the Y distance in centimeters
      * @return the resulting delay in milliseconds
      */
-    public double calculateTwoDimensional(double xInCm, double yInCm) {
-        double distance = Math.sqrt(xInCm * xInCm + yInCm * yInCm);
+    public double calculateTwoDimensional(double xinCm, double yinCm) {
+        double distance = Math.sqrt(xinCm * xinCm + yinCm * yinCm);
         return distanceToDelay(distance);
     }
 
@@ -181,13 +181,13 @@ public class SpeakerDelayCalcController {
      * Calculates the delay for a three-dimensional distance (x, y, z).
      * Uses the Pythagorean theorem in 3D: distance = sqrt(x^2 + y^2 + z^2).
      *
-     * @param xInCm the X distance in centimeters
-     * @param yInCm the Y distance in centimeters
-     * @param zInCm the Z distance in centimeters
+     * @param xinCm the X distance in centimeters
+     * @param yinCm the Y distance in centimeters
+     * @param zinCm the Z distance in centimeters
      * @return the resulting delay in milliseconds
      */
-    public double calculateThreeDimensional(double xInCm, double yInCm, double zInCm) {
-        double distance = Math.sqrt(xInCm * xInCm + yInCm * yInCm + zInCm * zInCm);
+    public double calculateThreeDimensional(double xinCm, double yinCm, double zinCm) {
+        double distance = Math.sqrt(xinCm * xinCm + yinCm * yinCm + zinCm * zinCm);
         return distanceToDelay(distance);
     }
 
@@ -231,7 +231,8 @@ public class SpeakerDelayCalcController {
         } catch (NumberFormatException e) {
             logger.warn("Invalid input for {}: '{}'", fieldName, value);
             resultLabel.setText(String.format(
-                    "Please enter a valid number for field '%s' (input was: '%s').", fieldName, value
+                    "Please enter a valid number for field '%s' (input was: '%s').",
+                    fieldName, value
             ));
             return null;
         }

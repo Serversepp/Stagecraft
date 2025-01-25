@@ -140,9 +140,8 @@ public class CableCrossSectionCalculatorController {
         });
 
         // Show custom voltage field when "Custom" is selected
-        voltageComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            customVoltageField.setVisible("Custom".equals(newValue));
-        });
+        voltageComboBox.valueProperty().addListener((observable, oldValue, newValue) ->
+                customVoltageField.setVisible("Custom".equals(newValue)));
 
         // Restrict numeric inputs for length, custom voltage, and input value fields
         enforceNumericInput(lengthField);
@@ -198,8 +197,8 @@ public class CableCrossSectionCalculatorController {
         boolean isSystemTypeMissing = systemTypeComboBox.getValue() == null;
         boolean isVoltageMissing = 
                 voltageComboBox.getValue() == null
-                        || ("Custom".equals(voltageComboBox.getValue())
-                        && customVoltageField.getText().isEmpty());
+                        || "Custom".equals(voltageComboBox.getValue())
+                        && customVoltageField.getText().isEmpty();
         boolean isInputMethodMissing =
                 inputMethodComboBox.getValue() == null || inputField.getText().isEmpty();
 
@@ -242,6 +241,7 @@ public class CableCrossSectionCalculatorController {
      * Reads user inputs, validates them, and uses the logic class to compute
      * the required cross-section, power loss, and recommended wiring.
      */
+    @SuppressWarnings("unused")
     @FXML
     private void calculateCrossSection() {
         try {
